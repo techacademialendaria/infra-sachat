@@ -2,35 +2,7 @@
 terraform {
   required_providers {
     azurerm = {
-    module "monitoring" {
-  source = "../../modules/monitoring"
-
-  resource_group_name = azurerm_resource_group.main.name
-  location           = azurerm_resource_group.main.location
-  project_name       = var.project_name
-  environment        = local.environment
-  tags              = local.tags
-  
-  # Production configurations
-  daily_data_cap_gb = var.application_insights_daily_cap_gb
-}
-
-module "backup" {
-  source = "../../modules/backup"
-
-  resource_group_name   = azurerm_resource_group.main.name
-  location             = azurerm_resource_group.main.location
-  project_name         = var.project_name
-  environment          = local.environment
-  storage_account_id   = module.storage.storage_account_id
-  tags                = local.tags
-  
-  # Production backup configurations
-  enable_storage_backup    = var.enable_storage_backup
-  daily_retention_days     = var.backup_daily_retention_days
-  weekly_retention_weeks   = var.backup_weekly_retention_weeks
-  monthly_retention_months = var.backup_monthly_retention_months
-}"hashicorp/azurerm"
+      source  = "hashicorp/azurerm"
       version = "~> 3.0"
     }
   }
@@ -115,7 +87,7 @@ module "database" {
   environment        = local.environment
   tags              = local.tags
   
-  # Production overrides
+  # Production specific configurations
   compute_tier      = var.compute_tier
   enable_high_availability = var.enable_high_availability
 }
@@ -129,8 +101,25 @@ module "monitoring" {
   environment        = local.environment
   tags              = local.tags
   
-  # Production overrides
+  # Production specific configurations
   daily_data_cap_gb = var.application_insights_daily_cap_gb
+}
+
+module "backup" {
+  source = "../../modules/backup"
+
+  resource_group_name   = azurerm_resource_group.main.name
+  location             = azurerm_resource_group.main.location
+  project_name         = var.project_name
+  environment          = local.environment
+  storage_account_id   = module.storage.storage_account_id
+  tags                = local.tags
+  
+  # Production backup configurations
+  enable_storage_backup    = var.enable_storage_backup
+  daily_retention_days     = var.backup_daily_retention_days
+  weekly_retention_weeks   = var.backup_weekly_retention_weeks
+  monthly_retention_months = var.backup_monthly_retention_months
 }
 
 module "container_apps" {
@@ -142,12 +131,12 @@ module "container_apps" {
   storage_account_name         = module.storage.storage_account_name
   storage_account_key          = module.storage.storage_account_key
   mongodb_connection_string    = module.database.connection_string
-  application_insights_key     = module.monitoring.application_insights_instrumentation_key
+  application_insights_key     = module.monitoring.application_insights_connection_string
   project_name                 = var.project_name
   environment                  = local.environment
   tags                        = local.tags
   
-  # Production overrides
+  # Production specific configurations
   min_replicas = var.min_replicas
   max_replicas = var.max_replicas
 }
@@ -161,19 +150,6 @@ module "domain" {
   container_app_fqdn     = module.container_apps.app_fqdn
   tags                  = local.tags
   
-  # Production creates DNS zone
+  # Production creates DNS zone for custom domain
   create_dns_zone = true
-  create_www_record = true
-}
-
-# Production-specific resources
-module "backup" {
-  source = "../../modules/backup"
-  count  = var.enable_backup ? 1 : 0
-
-  resource_group_name = azurerm_resource_group.main.name
-  location           = azurerm_resource_group.main.location
-  mongodb_server_name = module.database.server_name
-  storage_account_id  = module.storage.storage_account_id
-  tags               = local.tags
 }
