@@ -52,5 +52,5 @@ output "dns_zone_name_servers" {
 
 output "backup_vault_name" {
   description = "Nome do Recovery Services Vault"
-  value       = var.enable_backup ? module.backup[0].recovery_vault_name : ""
+  value       = var.enable_backup ? module.backup.recovery_vault_name : ""
 }
