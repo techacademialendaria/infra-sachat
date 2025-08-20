@@ -1,0 +1,255 @@
+name: Terraform Plan
+
+on:
+  pull_request:
+    branches: [main]
+    paths: ['terraform/**']
+  repository_dispatch:
+    types: [plan-request]
+
+env:
+  TF_VERSION: '1.5.0'
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+
+jobs:
+  detect-changes:
+    name: Detect Environment Changes
+    runs-on: ubuntu-latest
+    outputs:
+      staging: ${{ steps.changes.outputs.staging }}
+      production: ${{ steps.changes.outputs.production }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            staging:
+              - 'terraform/environments/staging/**'
+              - 'terraform/modules/**'
+            production:
+              - 'terraform/environments/production/**'
+              - 'terraform/modules/**'
+
+  infracost:
+    name: Infracost Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v3
+        with:
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
+
+      - name: Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: '${{ github.event.pull_request.base.ref }}'
+
+      - name: Generate Infracost cost estimate baseline
+        run: |
+          infracost breakdown --path=terraform/environments/production \
+                            --format=json \
+                            --out-file=/tmp/infracost-base.json
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+
+      - name: Generate Infracost diff
+        run: |
+          infracost diff --path=terraform/environments/production \
+                        --format=json \
+                        --compare-to=/tmp/infracost-base.json \
+                        --out-file=/tmp/infracost.json
+
+      - name: Post Infracost comment
+        run: |
+          infracost comment github --path=/tmp/infracost.json \
+                                  --repo=$GITHUB_REPOSITORY \
+                                  --github-token=${{github.token}} \
+                                  --pull-request=${{github.event.pull_request.number}} \
+                                  --behavior=update
+
+  plan-staging:
+    name: Plan Staging
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.staging == 'true'
+    
+    defaults:
+      run:
+        working-directory: terraform/environments/staging
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=${{ secrets.TERRAFORM_STATE_RG }}" \
+            -backend-config="storage_account_name=${{ secrets.TERRAFORM_STATE_SA }}" \
+            -backend-config="container_name=tfstate" \
+            -backend-config="key=staging.tfstate"
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          terraform plan -no-color -input=false \
+            -var="environment=staging" \
+            -var="resource_group_name=rg-sachat-staging" \
+            -var="domain_name=staging.chat2.superagentes.ai" \
+            -out=staging.tfplan
+          
+          terraform show -no-color staging.tfplan > staging-plan.txt
+        continue-on-error: true
+
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-plan
+          path: terraform/environments/staging/staging-plan.txt
+
+  plan-production:
+    name: Plan Production
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.production == 'true'
+    
+    defaults:
+      run:
+        working-directory: terraform/environments/production
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=${{ secrets.TERRAFORM_STATE_RG }}" \
+            -backend-config="storage_account_name=${{ secrets.TERRAFORM_STATE_SA }}" \
+            -backend-config="container_name=tfstate" \
+            -backend-config="key=production.tfstate"
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          terraform plan -no-color -input=false \
+            -var="environment=production" \
+            -var="resource_group_name=rg-sachat-prod" \
+            -var="domain_name=chat2.superagentes.ai" \
+            -out=production.tfplan
+          
+          terraform show -no-color production.tfplan > production-plan.txt
+        continue-on-error: true
+
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-plan
+          path: terraform/environments/production/production-plan.txt
+
+  comment-pr:
+    name: Comment on PR
+    runs-on: ubuntu-latest
+    needs: [plan-staging, plan-production]
+    if: always() && github.event_name == 'pull_request'
+    
+    steps:
+      - name: Download staging plan
+        uses: actions/download-artifact@v4
+        if: needs.plan-staging.result != 'skipped'
+        with:
+          name: staging-plan
+          path: ./plans/
+
+      - name: Download production plan
+        uses: actions/download-artifact@v4
+        if: needs.plan-production.result != 'skipped'
+        with:
+          name: production-plan
+          path: ./plans/
+
+      - name: Comment PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            let comment = `## 🏗️ Terraform Plan Results\n\n`;
+            
+            // Staging Plan
+            if (fs.existsSync('./plans/staging-plan.txt')) {
+              const stagingPlan = fs.readFileSync('./plans/staging-plan.txt', 'utf8');
+              comment += `### 🧪 Staging Environment\n`;
+              comment += `<details><summary>Show Staging Plan</summary>\n\n`;
+              comment += `\`\`\`\n${stagingPlan.substring(0, 8000)}\`\`\`\n`;
+              comment += `</details>\n\n`;
+            }
+            
+            // Production Plan  
+            if (fs.existsSync('./plans/production-plan.txt')) {
+              const productionPlan = fs.readFileSync('./plans/production-plan.txt', 'utf8');
+              comment += `### 🚀 Production Environment\n`;
+              comment += `<details><summary>Show Production Plan</summary>\n\n`;
+              comment += `\`\`\`\n${productionPlan.substring(0, 8000)}\`\`\`\n`;
+              comment += `</details>\n\n`;
+            }
+            
+            comment += `---\n`;
+            comment += `*Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          soft_fail: true
+
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: terraform/
+          framework: terraform
+          soft_fail: true
