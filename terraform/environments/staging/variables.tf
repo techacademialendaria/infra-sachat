@@ -7,7 +7,7 @@ variable "resource_group_name" {
 variable "location" {
   description = "Região do Azure"
   type        = string
-  default     = "West US 2"
+  default     = "East US 2"
 }
 
 variable "domain_name" {
