@@ -1,5 +1,10 @@
 name: Terraform Plan
 
+# Controle de concorrência para evitar plans simultâneos
+concurrency:
+  group: terraform-plan-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 on:
   pull_request:
     branches: [main]
