@@ -46,6 +46,12 @@ resource "azurerm_cosmosdb_account" "main" {
   }
 
   tags = var.tags
+
+  timeouts {
+    create = "60m"
+    update = "60m"
+    delete = "60m"
+  }
 }
 
 # Gerar senha aleatória para MongoDB
@@ -61,4 +67,12 @@ resource "azurerm_cosmosdb_mongo_database" "librechat" {
   account_name        = azurerm_cosmosdb_account.main.name
 
   throughput = var.compute_tier == "M25" ? 400 : var.compute_tier == "M30" ? 1000 : 4000
+
+  depends_on = [azurerm_cosmosdb_account.main]
+
+  timeouts {
+    create = "30m"
+    update = "30m"
+    delete = "30m"
+  }
 }

@@ -3,7 +3,7 @@ data "azurerm_client_config" "current" {}
 
 # Key Vault for encryption keys
 resource "azurerm_key_vault" "main" {
-  name                       = "kv-${var.project_name}-${var.environment}"
+  name                       = "kv-${var.project_name}-${var.environment}-v2"
   location                   = var.location
   resource_group_name        = var.resource_group_name
   tenant_id                  = data.azurerm_client_config.current.tenant_id
@@ -20,6 +20,12 @@ resource "azurerm_key_vault" "main" {
   }
 
   tags = var.tags
+
+  timeouts {
+    create = "30m"
+    update = "30m"
+    delete = "30m"
+  }
 }
 
 # Access policy for the current service principal
@@ -46,6 +52,12 @@ resource "azurerm_key_vault_access_policy" "terraform" {
     "Recover",
     "Purge",
   ]
+
+  timeouts {
+    create = "15m"
+    update = "15m"
+    delete = "15m"
+  }
 }
 
 # Key for CosmosDB encryption
@@ -68,6 +80,12 @@ resource "azurerm_key_vault_key" "cosmosdb" {
   ]
 
   depends_on = [azurerm_key_vault_access_policy.terraform]
+
+  timeouts {
+    create = "15m"
+    update = "15m"
+    delete = "15m"
+  }
 }
 
 # Key for Storage encryption
@@ -88,6 +106,12 @@ resource "azurerm_key_vault_key" "storage" {
   ]
 
   depends_on = [azurerm_key_vault_access_policy.terraform]
+
+  timeouts {
+    create = "15m"
+    update = "15m"
+    delete = "15m"
+  }
 }
 
 # TODO: Re-enable after initial deployment
