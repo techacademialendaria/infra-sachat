@@ -285,6 +285,22 @@ terraform plan \
 echo "✅ Terraform validado localmente!"
 ```
 
+### ⚠️ **IMPORTANTE: Evitar Conflitos de Lock**
+
+**NÃO execute `terraform plan` ou `terraform apply` localmente enquanto o GitHub Actions estiver rodando!**
+
+```bash
+# ❌ EVITE fazer isso se Actions estiver rodando:
+terraform plan
+terraform apply
+
+# ✅ Se precisar quebrar um lock travado:
+terraform force-unlock <LOCK_ID>
+
+# ✅ Use o script de diagnóstico:
+./scripts/diagnose.sh staging
+```
+
 ### **4.2. Deploy via GitHub Actions**
 
 ```bash
@@ -851,7 +867,66 @@ echo "  [ ] Alerts configurados"
 
 ---
 
-## 🎉 **Conclusão**
+## � **Troubleshooting Comum**
+
+### **State Lock Issues**
+
+**Erro**: `Error acquiring the state lock`
+
+```bash
+# 1. Verificar quem está usando o lock
+terraform force-unlock <LOCK_ID>
+
+# 2. Se for um processo local vs GitHub Actions:
+# PARE qualquer comando terraform local
+# Execute no terminal onde rodou terraform:
+Ctrl+C
+
+# 3. Quebrar o lock:
+cd terraform/environments/staging
+terraform force-unlock d8bb6941-2c3e-4294-a150-843872c9cc0e
+
+# 4. Re-executar o workflow no GitHub
+```
+
+### **Provider Issues**
+
+**Erro**: `Provider produced inconsistent result`
+
+```bash
+# Atualizar provider
+cd terraform/environments/staging
+terraform init -upgrade
+terraform refresh
+terraform plan
+```
+
+### **Backend Configuration**
+
+**Erro**: `storage account not found`
+
+```bash
+# Usar script de diagnóstico
+./scripts/diagnose.sh staging
+
+# Reconfigurar backend
+./scripts/fix-terraform-lock.sh staging
+```
+
+### **Recursos em Soft Delete**
+
+**Erro**: `resource already exists`
+
+```bash
+# Limpar recursos órfãos
+./scripts/cleanup-soft-delete.sh
+
+# Aguardar ou usar nomes diferentes
+```
+
+---
+
+## �🎉 **Conclusão**
 
 Parabéns! Você agora tem:
 
