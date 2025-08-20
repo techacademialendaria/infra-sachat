@@ -1,5 +1,10 @@
 name: Terraform Apply
 
+# Controle de concorrência para evitar execuções simultâneas
+concurrency:
+  group: terraform-apply-${{ github.event.inputs.environment || 'all' }}
+  cancel-in-progress: false
+
 on:
   push:
     branches: [main]
