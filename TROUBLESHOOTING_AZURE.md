@@ -142,6 +142,26 @@ terraform plan -detailed-exitcode
 terraform import azurerm_key_vault.main /subscriptions/.../resourceGroups/.../providers/Microsoft.KeyVault/vaults/...
 ```
 
+### Erro: "State blob is already locked" ✅ NOVO
+```bash
+# Usar script automático
+./scripts/fix-terraform-lock.sh staging
+
+# Ou manual:
+cd terraform/environments/staging
+terraform init -reconfigure \
+  -backend-config="storage_account_name=stsachatstate15819" \
+  -backend-config="container_name=tfstate" \
+  -backend-config="key=staging.tfstate" \
+  -backend-config="resource_group_name=rg-sachat-terraform-state"
+```
+
+### Erro: "Subscription ID could not be determined"
+```bash
+# Adicionar subscription_id no provider
+subscription_id = "a346bbab-4a12-49d7-ac00-819eb93c7802"
+```
+
 ### Erro: "Cannot delete resource group"
 ```bash
 # Verificar dependências
