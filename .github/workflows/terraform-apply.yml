@@ -182,7 +182,7 @@ jobs:
         run: |
           terraform plan -input=false \
             -var="environment=production" \
-            -var="resource_group_name=rg-sachat-prod" \
+            -var="resource_group_name=rg-sachat-production" \
             -var="domain_name=chat2.superagentes.ai" \
             -out=production.tfplan
 
