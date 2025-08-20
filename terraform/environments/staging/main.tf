@@ -20,7 +20,7 @@ provider "azurerm" {
       prevent_deletion_if_contains_resources = false
     }
   }
-  
+
   subscription_id = "a346bbab-4a12-49d7-ac00-819eb93c7802"
 }
 
