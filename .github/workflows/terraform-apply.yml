@@ -91,61 +91,61 @@ jobs:
   #   environment: 
   #     name: staging-infrastructure
   #     url: https://staging.chat2.superagentes.ai
-    
-    defaults:
-      run:
-        working-directory: terraform/environments/staging
-    
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-
-      - name: Terraform Init
-        run: |
-          terraform init \
-            -backend-config="resource_group_name=${{ secrets.TERRAFORM_STATE_RG }}" \
-            -backend-config="storage_account_name=${{ secrets.TERRAFORM_STATE_SA }}" \
-            -backend-config="container_name=tfstate" \
-            -backend-config="key=staging.tfstate"
-
-      - name: Terraform Plan
-        run: |
-          terraform plan -input=false \
-            -var="environment=staging" \
-            -var="resource_group_name=rg-sachat-staging" \
-            -var="domain_name=staging.chat2.superagentes.ai" \
-            -out=staging.tfplan
-
-      - name: Terraform Apply
-        if: github.event.inputs.action != 'plan'
-        run: terraform apply -input=false staging.tfplan
-
-      - name: Get Outputs
-        id: outputs
-        if: github.event.inputs.action != 'plan'
-        run: |
-          APP_URL=$(terraform output -raw app_url 2>/dev/null || echo "")
-          MONGODB_ENDPOINT=$(terraform output -raw mongodb_endpoint 2>/dev/null || echo "")
-          STORAGE_ACCOUNT=$(terraform output -raw storage_account_name 2>/dev/null || echo "")
-          
-          echo "app_url=$APP_URL" >> $GITHUB_OUTPUT
-          echo "mongodb_endpoint=$MONGODB_ENDPOINT" >> $GITHUB_OUTPUT
-          echo "storage_account=$STORAGE_ACCOUNT" >> $GITHUB_OUTPUT
-
-      - name: Update Environment Info
-        if: github.event.inputs.action != 'plan'
-        run: |
-          echo "🎯 **Staging Environment Updated**" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **App URL**: ${{ steps.outputs.outputs.app_url }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **MongoDB**: ${{ steps.outputs.outputs.mongodb_endpoint }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Storage**: ${{ steps.outputs.outputs.storage_account }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Updated**: $(date -u)" >> $GITHUB_STEP_SUMMARY
+  #   
+  #   defaults:
+  #     run:
+  #       working-directory: terraform/environments/staging
+  #   
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  # 
+  #     - name: Setup Terraform
+  #       uses: hashicorp/setup-terraform@v3
+  #       with:
+  #         terraform_version: ${{ env.TF_VERSION }}
+  # 
+  #     - name: Terraform Init
+  #       run: |
+  #         terraform init \
+  #           -backend-config="resource_group_name=${{ secrets.TERRAFORM_STATE_RG }}" \
+  #           -backend-config="storage_account_name=${{ secrets.TERRAFORM_STATE_SA }}" \
+  #           -backend-config="container_name=tfstate" \
+  #           -backend-config="key=staging.tfstate"
+  # 
+  #     - name: Terraform Plan
+  #       run: |
+  #         terraform plan -input=false \
+  #           -var="environment=staging" \
+  #           -var="resource_group_name=rg-sachat-staging" \
+  #           -var="domain_name=staging.chat2.superagentes.ai" \
+  #           -out=staging.tfplan
+  # 
+  #     - name: Terraform Apply
+  #       if: github.event.inputs.action != 'plan'
+  #       run: terraform apply -input=false staging.tfplan
+  # 
+  #     - name: Get Outputs
+  #       id: outputs
+  #       if: github.event.inputs.action != 'plan'
+  #       run: |
+  #         APP_URL=$(terraform output -raw app_url 2>/dev/null || echo "")
+  #         MONGODB_ENDPOINT=$(terraform output -raw mongodb_endpoint 2>/dev/null || echo "")
+  #         STORAGE_ACCOUNT=$(terraform output -raw storage_account_name 2>/dev/null || echo "")
+  #         
+  #         echo "app_url=$APP_URL" >> $GITHUB_OUTPUT
+  #         echo "mongodb_endpoint=$MONGODB_ENDPOINT" >> $GITHUB_OUTPUT
+  #         echo "storage_account=$STORAGE_ACCOUNT" >> $GITHUB_OUTPUT
+  # 
+  #     - name: Update Environment Info
+  #       if: github.event.inputs.action != 'plan'
+  #       run: |
+  #         echo "🎯 **Staging Environment Updated**" >> $GITHUB_STEP_SUMMARY
+  #         echo "" >> $GITHUB_STEP_SUMMARY
+  #         echo "- **App URL**: ${{ steps.outputs.outputs.app_url }}" >> $GITHUB_STEP_SUMMARY
+  #         echo "- **MongoDB**: ${{ steps.outputs.outputs.mongodb_endpoint }}" >> $GITHUB_STEP_SUMMARY
+  #         echo "- **Storage**: ${{ steps.outputs.outputs.storage_account }}" >> $GITHUB_STEP_SUMMARY
+  #         echo "- **Updated**: $(date -u)" >> $GITHUB_STEP_SUMMARY
 
   apply-production:
     name: Apply Production
@@ -250,18 +250,14 @@ jobs:
   notify-app-repo:
     name: Notify Application Repository
     runs-on: ubuntu-latest
-    needs: [apply-staging, apply-production]
-    if: always() && (needs.apply-staging.result == 'success' || needs.apply-production.result == 'success')
+    needs: [apply-production]
+    if: always() && needs.apply-production.result == 'success'
     
     steps:
       - name: Determine environment
         id: env
         run: |
-          if [ "${{ needs.apply-staging.result }}" = "success" ]; then
-            echo "environment=staging" >> $GITHUB_OUTPUT
-          elif [ "${{ needs.apply-production.result }}" = "success" ]; then
-            echo "environment=production" >> $GITHUB_OUTPUT
-          fi
+          echo "environment=production" >> $GITHUB_OUTPUT
 
       - name: Repository Dispatch to App
         uses: peter-evans/repository-dispatch@v3
