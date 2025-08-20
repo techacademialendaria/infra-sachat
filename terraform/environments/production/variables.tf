@@ -66,6 +66,31 @@ variable "application_insights_daily_cap_gb" {
   default     = 0.1  # 100MB para produção
 }
 
+# Backup configurations
+variable "enable_storage_backup" {
+  description = "Habilitar backup da storage account"
+  type        = bool
+  default     = true  # Enabled for production
+}
+
+variable "backup_daily_retention_days" {
+  description = "Dias de retenção do backup diário"
+  type        = number
+  default     = 30
+}
+
+variable "backup_weekly_retention_weeks" {
+  description = "Semanas de retenção do backup semanal"
+  type        = number
+  default     = 12
+}
+
+variable "backup_monthly_retention_months" {
+  description = "Meses de retenção do backup mensal"
+  type        = number
+  default     = 12
+}
+
 # Configurações de rede para produção
 variable "enable_private_endpoint" {
   description = "Habilitar private endpoints"

@@ -25,6 +25,9 @@ resource "azurerm_cosmosdb_account" "main" {
     type = "SystemAssigned"
   }
   
+  # Customer-managed encryption
+  default_identity_type = "FirstPartyIdentity"
+  
   capabilities {
     name = "EnableMongo"
   }

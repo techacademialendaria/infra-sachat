@@ -23,3 +23,8 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "subnet_id" {
+  description = "ID da subnet para private endpoint"
+  type        = string
+}

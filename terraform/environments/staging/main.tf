@@ -54,14 +54,28 @@ module "network" {
   tags              = local.tags
 }
 
-module "storage" {
-  source = "../../modules/storage"
+module "keyvault" {
+  source = "../../modules/keyvault"
 
   resource_group_name = azurerm_resource_group.main.name
   location           = azurerm_resource_group.main.location
   project_name       = var.project_name
   environment        = local.environment
+  subnet_id          = module.network.subnet_id
   tags              = local.tags
+}
+
+module "storage" {
+  source = "../../modules/storage"
+
+  resource_group_name            = azurerm_resource_group.main.name
+  location                      = azurerm_resource_group.main.location
+  project_name                  = var.project_name
+  environment                   = local.environment
+  subnet_id                     = module.network.subnet_id
+  key_vault_id                  = module.keyvault.key_vault_id
+  storage_encryption_key_name   = module.keyvault.storage_encryption_key_name
+  tags                         = local.tags
 }
 
 module "database" {
@@ -89,6 +103,23 @@ module "monitoring" {
   
   # Staging specific configurations
   daily_data_cap_gb = var.application_insights_daily_cap_gb
+}
+
+module "backup" {
+  source = "../../modules/backup"
+
+  resource_group_name   = azurerm_resource_group.main.name
+  location             = azurerm_resource_group.main.location
+  project_name         = var.project_name
+  environment          = local.environment
+  storage_account_id   = module.storage.storage_account_id
+  tags                = local.tags
+  
+  # Staging backup configurations
+  enable_storage_backup    = var.enable_storage_backup
+  daily_retention_days     = var.backup_daily_retention_days
+  weekly_retention_weeks   = var.backup_weekly_retention_weeks
+  monthly_retention_months = var.backup_monthly_retention_months
 }
 
 module "container_apps" {

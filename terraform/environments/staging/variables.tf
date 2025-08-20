@@ -59,3 +59,28 @@ variable "application_insights_daily_cap_gb" {
   type        = number
   default     = 0.05  # 50MB para staging
 }
+
+# Backup configurations
+variable "enable_storage_backup" {
+  description = "Habilitar backup da storage account"
+  type        = bool
+  default     = false  # Disabled for staging to save costs
+}
+
+variable "backup_daily_retention_days" {
+  description = "Dias de retenção do backup diário"
+  type        = number
+  default     = 7
+}
+
+variable "backup_weekly_retention_weeks" {
+  description = "Semanas de retenção do backup semanal"
+  type        = number
+  default     = 4
+}
+
+variable "backup_monthly_retention_months" {
+  description = "Meses de retenção do backup mensal"
+  type        = number
+  default     = 3
+}
