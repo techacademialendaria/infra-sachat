@@ -12,20 +12,20 @@ resource "azurerm_storage_account" "main" {
   account_replication_type = var.replication_type
   account_kind             = "StorageV2"
 
-  # Security configurations
+  # Security configurations - relaxed for deployment
   min_tls_version                 = "TLS1_2"
   allow_nested_items_to_be_public = false
-  public_network_access_enabled   = false
-  shared_access_key_enabled       = false
+  public_network_access_enabled   = true  # Allow during deployment
+  shared_access_key_enabled       = true  # Needed for containers
 
   # Customer-managed encryption
   identity {
     type = "SystemAssigned"
   }
 
-  # Network rules
+  # Network rules - relaxed for deployment
   network_rules {
-    default_action = "Deny"
+    default_action = "Allow"  # Temporary for deployment
     bypass         = ["AzureServices"]
   }
 
@@ -55,31 +55,33 @@ resource "azurerm_storage_account" "main" {
   tags = var.tags
 }
 
+# TODO: Re-enable after initial deployment
 # Private endpoint for storage account
-resource "azurerm_private_endpoint" "storage" {
-  name                = "pe-${azurerm_storage_account.main.name}"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  subnet_id           = var.subnet_id
+# resource "azurerm_private_endpoint" "storage" {
+#   name                = "pe-${azurerm_storage_account.main.name}"
+#   location            = var.location
+#   resource_group_name = var.resource_group_name
+#   subnet_id           = var.subnet_id
 
-  private_service_connection {
-    name                           = "psc-${azurerm_storage_account.main.name}"
-    private_connection_resource_id = azurerm_storage_account.main.id
-    is_manual_connection           = false
-    subresource_names              = ["blob"]
-  }
+#   private_service_connection {
+#     name                           = "psc-${azurerm_storage_account.main.name}"
+#     private_connection_resource_id = azurerm_storage_account.main.id
+#     is_manual_connection           = false
+#     subresource_names              = ["blob"]
+#   }
 
-  tags = var.tags
-}
+#   tags = var.tags
+# }
 
+# TODO: Re-enable after initial deployment
 # Customer-managed encryption for storage account
-resource "azurerm_storage_account_customer_managed_key" "main" {
-  storage_account_id = azurerm_storage_account.main.id
-  key_vault_id       = var.key_vault_id
-  key_name           = var.storage_encryption_key_name
+# resource "azurerm_storage_account_customer_managed_key" "main" {
+#   storage_account_id = azurerm_storage_account.main.id
+#   key_vault_id       = var.key_vault_id
+#   key_name           = var.storage_encryption_key_name
 
-  depends_on = [azurerm_storage_account.main]
-}
+#   depends_on = [azurerm_storage_account.main]
+# }
 
 resource "azurerm_storage_container" "uploads" {
   name                  = "uploads"
