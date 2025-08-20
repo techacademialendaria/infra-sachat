@@ -18,7 +18,6 @@ variable "environment" {
   type        = string
 }
 
-
 variable "compute_tier" {
   description = "Tier de computação para o cluster MongoDB"
   type        = string
@@ -31,6 +30,17 @@ variable "enable_high_availability" {
   default     = false
 }
 
+variable "subnet_id" {
+  description = "ID da subnet para integração"
+  type        = string
+  default     = null
+}
+
+variable "key_vault_key_id" {
+  description = "ID da chave do Key Vault para encriptação"
+  type        = string
+  default     = null
+}
 
 variable "tags" {
   description = "Tags para os recursos"
