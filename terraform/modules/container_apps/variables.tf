@@ -63,19 +63,19 @@ variable "max_replicas" {
 variable "app_image" {
   description = "Imagem Docker da aplicação"
   type        = string
-  default     = "ghcr.io/seu-usuario/legendschat:latest"
+  default     = "ghcr.io/techacademialendaria/legendschat:latest"
 }
 
 variable "app_cpu" {
   description = "CPU para o container da aplicação"
   type        = number
-  default     = 1.5
+  default     = 1.0
 }
 
 variable "app_memory" {
   description = "Memória para o container da aplicação"
   type        = string
-  default     = "3Gi"
+  default     = "2Gi"
 }
 
 # MeiliSearch Sidecar
