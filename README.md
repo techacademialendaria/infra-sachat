@@ -207,4 +207,4 @@ Este repositório trabalha em conjunto com o [legendschat](https://github.com/se
 - **Infra apply → Notifica app** sobre mudanças de infraestrutura
 - **Cross-repo triggers** para sincronização automática
 
-Veja o [guia completo](../docs/MULTI_REPO_DEPLOYMENT_GUIDE.md) para detalhes do fluxo.
+Veja o [guia completo](../docs/MULTI_REPO_DEPLOYMENT_GUIDE.md) para detalhes do fluxo.# Initial setup
