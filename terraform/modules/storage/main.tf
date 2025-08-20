@@ -15,8 +15,8 @@ resource "azurerm_storage_account" "main" {
   # Security configurations - relaxed for deployment
   min_tls_version                 = "TLS1_2"
   allow_nested_items_to_be_public = false
-  public_network_access_enabled   = true  # Allow during deployment
-  shared_access_key_enabled       = true  # Needed for containers
+  public_network_access_enabled   = true # Allow during deployment
+  shared_access_key_enabled       = true # Needed for containers
 
   # Customer-managed encryption
   identity {
@@ -25,7 +25,7 @@ resource "azurerm_storage_account" "main" {
 
   # Network rules - relaxed for deployment
   network_rules {
-    default_action = "Allow"  # Temporary for deployment
+    default_action = "Allow" # Temporary for deployment
     bypass         = ["AzureServices"]
   }
 

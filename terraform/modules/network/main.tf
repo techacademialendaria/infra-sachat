@@ -4,7 +4,7 @@ resource "azurerm_log_analytics_workspace" "main" {
   resource_group_name = var.resource_group_name
   sku                 = "PerGB2018"
   retention_in_days   = var.log_retention_days
-  daily_quota_gb      = 0.1  # 100MB daily cap
+  daily_quota_gb      = 0.1 # 100MB daily cap
 
   tags = var.tags
 }
@@ -50,11 +50,11 @@ resource "azurerm_subnet" "container_apps" {
 }
 
 resource "azurerm_container_app_environment" "main" {
-  name                         = "cae-${var.project_name}-${var.environment}"
-  location                     = var.location
-  resource_group_name          = var.resource_group_name
-  log_analytics_workspace_id   = azurerm_log_analytics_workspace.main.id
+  name                       = "cae-${var.project_name}-${var.environment}"
+  location                   = var.location
+  resource_group_name        = var.resource_group_name
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
   # Usando configuração básica sem subnet dedicada
-  
+
   tags = var.tags
 }
