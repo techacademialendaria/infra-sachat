@@ -11,11 +11,11 @@ resource "azurerm_key_vault" "main" {
   soft_delete_retention_days = 7
   purge_protection_enabled   = true
 
-  # Network access restrictions
-  public_network_access_enabled = false
+  # Network access restrictions - allow Azure services during deployment
+  public_network_access_enabled = true
 
   network_acls {
-    default_action = "Deny"
+    default_action = "Allow" # Temporary for deployment
     bypass         = "AzureServices"
   }
 
@@ -90,19 +90,20 @@ resource "azurerm_key_vault_key" "storage" {
   depends_on = [azurerm_key_vault_access_policy.terraform]
 }
 
+# TODO: Re-enable after initial deployment
 # Private endpoint for Key Vault
-resource "azurerm_private_endpoint" "keyvault" {
-  name                = "pe-${azurerm_key_vault.main.name}"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  subnet_id           = var.subnet_id
+# resource "azurerm_private_endpoint" "keyvault" {
+#   name                = "pe-${azurerm_key_vault.main.name}"
+#   location            = var.location
+#   resource_group_name = var.resource_group_name
+#   subnet_id           = var.subnet_id
 
-  private_service_connection {
-    name                           = "psc-${azurerm_key_vault.main.name}"
-    private_connection_resource_id = azurerm_key_vault.main.id
-    is_manual_connection           = false
-    subresource_names              = ["vault"]
-  }
+#   private_service_connection {
+#     name                           = "psc-${azurerm_key_vault.main.name}"
+#     private_connection_resource_id = azurerm_key_vault.main.id
+#     is_manual_connection           = false
+#     subresource_names              = ["vault"]
+#   }
 
-  tags = var.tags
-}
+#   tags = var.tags
+# }
