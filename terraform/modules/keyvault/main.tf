@@ -64,11 +64,8 @@ resource "azurerm_key_vault_access_policy" "terraform" {
 resource "azurerm_key_vault_key" "cosmosdb" {
   name         = "cosmosdb-encryption-key"
   key_vault_id = azurerm_key_vault.main.id
-  key_type     = "RSA" # Mudando para RSA standard temporariamente
+  key_type     = "RSA"
   key_size     = 2048
-
-  # Set expiration date (1 year from now)
-  expiration_date = timeadd(timestamp(), "8760h")
 
   key_opts = [
     "decrypt",
@@ -92,11 +89,8 @@ resource "azurerm_key_vault_key" "cosmosdb" {
 resource "azurerm_key_vault_key" "storage" {
   name         = "storage-encryption-key"
   key_vault_id = azurerm_key_vault.main.id
-  key_type     = "RSA" # Mudando para RSA standard temporariamente
+  key_type     = "RSA"
   key_size     = 2048
-
-  # Set expiration date (1 year from now)
-  expiration_date = timeadd(timestamp(), "8760h")
 
   key_opts = [
     "decrypt",
