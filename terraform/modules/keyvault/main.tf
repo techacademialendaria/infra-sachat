@@ -7,13 +7,13 @@ resource "azurerm_key_vault" "main" {
   location                   = var.location
   resource_group_name        = var.resource_group_name
   tenant_id                  = data.azurerm_client_config.current.tenant_id
-  sku_name                   = "premium"  # Premium for HSM support
+  sku_name                   = "premium" # Premium for HSM support
   soft_delete_retention_days = 7
   purge_protection_enabled   = true
 
   # Network access restrictions
   public_network_access_enabled = false
-  
+
   network_acls {
     default_action = "Deny"
     bypass         = "AzureServices"
@@ -52,9 +52,9 @@ resource "azurerm_key_vault_access_policy" "terraform" {
 resource "azurerm_key_vault_key" "cosmosdb" {
   name         = "cosmosdb-encryption-key"
   key_vault_id = azurerm_key_vault.main.id
-  key_type     = "RSA-HSM"  # HSM-backed key
+  key_type     = "RSA-HSM" # HSM-backed key
   key_size     = 2048
-  
+
   # Set expiration date (1 year from now)
   expiration_date = timeadd(timestamp(), "8760h")
 
@@ -74,9 +74,9 @@ resource "azurerm_key_vault_key" "cosmosdb" {
 resource "azurerm_key_vault_key" "storage" {
   name         = "storage-encryption-key"
   key_vault_id = azurerm_key_vault.main.id
-  key_type     = "RSA-HSM"  # HSM-backed key
+  key_type     = "RSA-HSM" # HSM-backed key
   key_size     = 2048
-  
+
   # Set expiration date (1 year from now)
   expiration_date = timeadd(timestamp(), "8760h")
 

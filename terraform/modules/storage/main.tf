@@ -11,18 +11,18 @@ resource "azurerm_storage_account" "main" {
   account_tier             = "Standard"
   account_replication_type = var.replication_type
   account_kind             = "StorageV2"
-  
+
   # Security configurations
-  min_tls_version                = "TLS1_2"
+  min_tls_version                 = "TLS1_2"
   allow_nested_items_to_be_public = false
   public_network_access_enabled   = false
   shared_access_key_enabled       = false
-  
+
   # Customer-managed encryption
   identity {
     type = "SystemAssigned"
   }
-  
+
   # Network rules
   network_rules {
     default_action = "Deny"
@@ -37,16 +37,16 @@ resource "azurerm_storage_account" "main" {
       exposed_headers    = ["*"]
       max_age_in_seconds = 3600
     }
-    
+
     # Enable soft delete
     delete_retention_policy {
       days = 7
     }
-    
+
     # Enable versioning
     versioning_enabled = true
   }
-  
+
   # Queue properties  
   queue_properties {
     # Queue properties don't support logging in this context

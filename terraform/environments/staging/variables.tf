@@ -51,20 +51,20 @@ variable "max_replicas" {
 variable "compute_tier" {
   description = "Tier de computação para o cluster MongoDB em staging"
   type        = string
-  default     = "M25"  # Menor tier para staging
+  default     = "M25" # Menor tier para staging
 }
 
 variable "application_insights_daily_cap_gb" {
   description = "Limite diário do Application Insights em GB"
   type        = number
-  default     = 0.05  # 50MB para staging
+  default     = 0.05 # 50MB para staging
 }
 
 # Backup configurations
 variable "enable_storage_backup" {
   description = "Habilitar backup da storage account"
   type        = bool
-  default     = false  # Disabled for staging to save costs
+  default     = false # Disabled for staging to save costs
 }
 
 variable "backup_daily_retention_days" {

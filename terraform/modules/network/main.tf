@@ -24,7 +24,7 @@ resource "azurerm_subnet" "main" {
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefixes     = ["10.0.1.0/24"]
-  
+
   # Required for private endpoints
   private_endpoint_network_policies = "Disabled"
 }
@@ -35,7 +35,7 @@ resource "azurerm_subnet" "container_apps" {
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefixes     = ["10.0.2.0/23"]
-  
+
   # Delegate to Container Apps
   delegation {
     name = "container-apps-delegation"

@@ -7,7 +7,7 @@ resource "azurerm_recovery_services_vault" "main" {
   resource_group_name = var.resource_group_name
   sku                 = "Standard"
   storage_mode_type   = "GeoRedundant"
-  
+
   # Managed identity for security compliance
   identity {
     type = "SystemAssigned"

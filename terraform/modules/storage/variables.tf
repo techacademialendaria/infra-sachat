@@ -21,7 +21,7 @@ variable "environment" {
 variable "replication_type" {
   description = "Tipo de replicação da storage account"
   type        = string
-  default     = "GRS"  # Geographic redundancy for compliance
+  default     = "GRS" # Geographic redundancy for compliance
 }
 
 variable "tags" {

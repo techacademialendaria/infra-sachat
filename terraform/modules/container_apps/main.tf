@@ -3,7 +3,7 @@ resource "azurerm_container_app" "main" {
   name                         = "ca-${var.project_name}-${var.environment}"
   container_app_environment_id = var.container_app_environment_id
   resource_group_name          = var.resource_group_name
-  revision_mode               = "Single"
+  revision_mode                = "Single"
 
   secret {
     name  = "mongodb-connection-string"
@@ -131,8 +131,8 @@ resource "azurerm_container_app" "main" {
 
   ingress {
     allow_insecure_connections = false
-    external_enabled          = true
-    target_port               = 3080
+    external_enabled           = true
+    target_port                = 3080
 
     traffic_weight {
       percentage      = 100
