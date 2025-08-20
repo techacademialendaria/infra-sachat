@@ -79,17 +79,18 @@ jobs:
               - 'terraform/environments/production/**'
               - 'terraform/modules/**'
 
-  apply-staging:
-    name: Apply Staging
-    runs-on: ubuntu-latest
-    needs: detect-changes
-    if: |
-      (needs.detect-changes.outputs.environment == 'staging') ||
-      (needs.detect-changes.outputs.environment == 'auto-detect' && needs.detect-changes.outputs.staging == 'true') ||
-      (github.event_name == 'repository_dispatch' && github.event.action == 'app-deployed-staging')
-    environment: 
-      name: staging-infrastructure
-      url: https://staging.chat2.superagentes.ai
+  # STAGING TEMPORARIAMENTE DESABILITADO - EXECUTANDO APENAS PRODUÇÃO
+  # apply-staging:
+  #   name: Apply Staging
+  #   runs-on: ubuntu-latest
+  #   needs: detect-changes
+  #   if: |
+  #     (needs.detect-changes.outputs.environment == 'staging') ||
+  #     (needs.detect-changes.outputs.environment == 'auto-detect' && needs.detect-changes.outputs.staging == 'true') ||
+  #     (github.event_name == 'repository_dispatch' && github.event.action == 'app-deployed-staging')
+  #   environment: 
+  #     name: staging-infrastructure
+  #     url: https://staging.chat2.superagentes.ai
     
     defaults:
       run:
@@ -150,10 +151,8 @@ jobs:
     name: Apply Production
     runs-on: ubuntu-latest
     needs: detect-changes
-    if: |
-      (needs.detect-changes.outputs.environment == 'production') ||
-      (needs.detect-changes.outputs.environment == 'auto-detect' && needs.detect-changes.outputs.production == 'true') ||
-      (github.event_name == 'repository_dispatch' && github.event.action == 'app-deployed-production')
+    # FORÇANDO EXECUÇÃO APENAS DE PRODUÇÃO
+    if: true
     environment: 
       name: production-infrastructure
       url: https://chat2.superagentes.ai
