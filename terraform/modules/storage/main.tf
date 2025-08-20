@@ -47,11 +47,6 @@ resource "azurerm_storage_account" "main" {
     versioning_enabled = true
   }
 
-  # Queue properties  
-  queue_properties {
-    # Queue properties don't support logging in this context
-  }
-
   tags = var.tags
 }
 
