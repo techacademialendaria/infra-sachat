@@ -5,7 +5,7 @@ resource "azurerm_cosmosdb_account" "main" {
   offer_type          = "Standard"
   kind                = "MongoDB"
   
-  enable_automatic_failover = var.enable_high_availability
+  automatic_failover_enabled = var.enable_high_availability
   
   # Security configurations
   public_network_access_enabled    = false

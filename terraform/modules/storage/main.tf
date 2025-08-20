@@ -45,32 +45,11 @@ resource "azurerm_storage_account" "main" {
     
     # Enable versioning
     versioning_enabled = true
-    
-    # Enable logging
-    logging {
-      read                 = true
-      write               = true
-      delete              = true
-      version             = "1.0"
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
-    }
   }
   
-  # Queue properties for logging
+  # Queue properties  
   queue_properties {
-    logging {
-      read                 = true
-      write               = true
-      delete              = true
-      version             = "1.0"
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
-    }
+    # Queue properties don't support logging in this context
   }
 
   tags = var.tags
