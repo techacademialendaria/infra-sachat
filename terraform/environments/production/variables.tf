@@ -57,26 +57,51 @@ variable "max_replicas" {
 variable "compute_tier" {
   description = "Tier de computação para o cluster MongoDB em produção"
   type        = string
-  default     = "M40"  # Tier mais potente para produção
+  default     = "M40" # Tier mais potente para produção
 }
 
 variable "application_insights_daily_cap_gb" {
   description = "Limite diário do Application Insights em GB"
   type        = number
-  default     = 0.1  # 100MB para produção
+  default     = 0.1 # 100MB para produção
+}
+
+# Backup configurations
+variable "enable_storage_backup" {
+  description = "Habilitar backup da storage account"
+  type        = bool
+  default     = true # Enabled for production
+}
+
+variable "backup_daily_retention_days" {
+  description = "Dias de retenção do backup diário"
+  type        = number
+  default     = 30
+}
+
+variable "backup_weekly_retention_weeks" {
+  description = "Semanas de retenção do backup semanal"
+  type        = number
+  default     = 12
+}
+
+variable "backup_monthly_retention_months" {
+  description = "Meses de retenção do backup mensal"
+  type        = number
+  default     = 12
 }
 
 # Configurações de rede para produção
 variable "enable_private_endpoint" {
   description = "Habilitar private endpoints"
   type        = bool
-  default     = false  # Pode ser habilitado para máxima segurança
+  default     = false # Pode ser habilitado para máxima segurança
 }
 
 variable "allowed_ip_ranges" {
   description = "Faixas de IP permitidas para acesso"
   type        = list(string)
-  default     = ["0.0.0.0/0"]  # Aberto por padrão, restringir conforme necessário
+  default     = ["0.0.0.0/0"] # Aberto por padrão, restringir conforme necessário
 }
 
 # Configurações de monitoramento

@@ -70,7 +70,7 @@ jobs:
         run: |
           infracost comment github --path=/tmp/infracost.json \
                                   --repo=$GITHUB_REPOSITORY \
-                                  --github-token=${{github.token}} \
+                                  --github-token=${{ secrets.APP_REPO_TOKEN }} \
                                   --pull-request=${{github.event.pull_request.number}} \
                                   --behavior=update
 
@@ -187,21 +187,24 @@ jobs:
     steps:
       - name: Download staging plan
         uses: actions/download-artifact@v4
-        if: needs.plan-staging.result != 'skipped'
+        if: needs.plan-staging.result == 'success' || needs.plan-staging.result == 'failure'
         with:
           name: staging-plan
           path: ./plans/
+        continue-on-error: true
 
       - name: Download production plan
         uses: actions/download-artifact@v4
-        if: needs.plan-production.result != 'skipped'
+        if: needs.plan-production.result == 'success' || needs.plan-production.result == 'failure'
         with:
           name: production-plan
           path: ./plans/
+        continue-on-error: true
 
       - name: Comment PR
         uses: actions/github-script@v7
         with:
+          github-token: ${{ secrets.APP_REPO_TOKEN }}
           script: |
             const fs = require('fs');
             
@@ -214,6 +217,9 @@ jobs:
               comment += `<details><summary>Show Staging Plan</summary>\n\n`;
               comment += `\`\`\`\n${stagingPlan.substring(0, 8000)}\`\`\`\n`;
               comment += `</details>\n\n`;
+            } else {
+              comment += `### 🧪 Staging Environment\n`;
+              comment += `❌ Plan not available or job was skipped\n\n`;
             }
             
             // Production Plan  
@@ -223,6 +229,9 @@ jobs:
               comment += `<details><summary>Show Production Plan</summary>\n\n`;
               comment += `\`\`\`\n${productionPlan.substring(0, 8000)}\`\`\`\n`;
               comment += `</details>\n\n`;
+            } else {
+              comment += `### 🚀 Production Environment\n`;
+              comment += `❌ Plan not available or job was skipped\n\n`;
             }
             
             comment += `---\n`;
