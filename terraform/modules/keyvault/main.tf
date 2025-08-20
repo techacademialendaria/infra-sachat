@@ -64,7 +64,7 @@ resource "azurerm_key_vault_access_policy" "terraform" {
 resource "azurerm_key_vault_key" "cosmosdb" {
   name         = "cosmosdb-encryption-key"
   key_vault_id = azurerm_key_vault.main.id
-  key_type     = "RSA-HSM" # HSM-backed key
+  key_type     = "RSA" # Mudando para RSA standard temporariamente
   key_size     = 2048
 
   # Set expiration date (1 year from now)
@@ -92,7 +92,7 @@ resource "azurerm_key_vault_key" "cosmosdb" {
 resource "azurerm_key_vault_key" "storage" {
   name         = "storage-encryption-key"
   key_vault_id = azurerm_key_vault.main.id
-  key_type     = "RSA-HSM" # HSM-backed key
+  key_type     = "RSA" # Mudando para RSA standard temporariamente
   key_size     = 2048
 
   # Set expiration date (1 year from now)

@@ -54,7 +54,8 @@ resource "azurerm_container_app_environment" "main" {
   location                     = var.location
   resource_group_name          = var.resource_group_name
   log_analytics_workspace_id   = azurerm_log_analytics_workspace.main.id
-  infrastructure_subnet_id     = azurerm_subnet.container_apps.id
+  # Removendo subnet delegation temporariamente para evitar erro
+  # infrastructure_subnet_id     = azurerm_subnet.container_apps.id
   internal_load_balancer_enabled = false
 
   tags = var.tags
