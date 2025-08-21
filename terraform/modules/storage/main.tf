@@ -23,8 +23,8 @@ resource "azurerm_storage_account" "main" {
   access_tier              = var.access_tier
 
   # Security settings
-  enable_https_traffic_only = true
-  min_tls_version          = "TLS1_2"
+  https_traffic_only_enabled = true
+  min_tls_version            = "TLS1_2"
   
   # Blob properties
   blob_properties {

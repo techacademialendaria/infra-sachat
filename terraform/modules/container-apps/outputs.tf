@@ -12,8 +12,8 @@ output "environment_name" {
 }
 
 output "log_analytics_workspace_id" {
-  description = "ID do Log Analytics Workspace"
-  value       = azurerm_log_analytics_workspace.main.id
+  description = "ID do Log Analytics Workspace (vem do Application Insights)"
+  value       = var.log_analytics_workspace_id
 }
 
 # Frontend (público - substitui NGINX)

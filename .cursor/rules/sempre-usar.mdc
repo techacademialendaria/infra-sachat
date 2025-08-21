@@ -1,7 +1,10 @@
 ---
 alwaysApply: true
 ---
-Sempre consulte o arquivo /home/ubuntu/sa/infra-sachat/MIGRATION_CONTEXT.md e o atualize com a última ação e próximos planos
-Sempre consulte o arquivo /home/ubuntu/sa/legendschat/PLANO_MIGRACAO_AZURE.md e o atualize conforme progredir
+#IMPORTANTE
+1 - Sempre consulte o arquivo /home/ubuntu/sa/infra-sachat/MIGRATION_CONTEXT.md e o atualize com a última ação e próximos planos
+2 - Sempre consulte o arquivo /home/ubuntu/sa/legendschat/PLANO_MIGRACAO_AZURE.md e o atualize conforme progredir
 
-Sempre use web_search para validar a documentação para o que planeja fazer
+3 - Sempre use web_search para validar a documentação para o que planeja fazer
+
+4 - Mantenha o registro dos últimos 3 problemas e as 3 soluções aplicadas

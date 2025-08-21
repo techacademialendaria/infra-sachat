@@ -56,6 +56,20 @@ variable "storage_connection_string" {
   sensitive   = true
 }
 
+# Application Insights Configuration
+variable "log_analytics_workspace_id" {
+  description = "ID do Log Analytics Workspace (do Application Insights)"
+  type        = string
+  default     = null
+}
+
+variable "application_insights_connection_string" {
+  description = "Connection string do Application Insights"
+  type        = string
+  default     = null
+  sensitive   = true
+}
+
 # API Configuration (equivalente ao LibreChat-API)
 variable "api_config" {
   description = "Configuração da API (substitui LibreChat-API container)"

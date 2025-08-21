@@ -109,6 +109,7 @@ rag_api          → superchat-rag-api (1-5 replicas)
 - [x] **.gitignore**: Proteção contra commit de secrets
 - [x] **GitHub Actions**: Atualizadas para versões 2025 (v4, v2)
 - [x] **Terraform Formatting**: Corrigido fmt em todos os arquivos
+- [x] **Application Insights**: Módulo criado (100MB/dia, alertas, dashboard)
 
 ### 📋 PRÓXIMOS PASSOS:
 1. **Configurar Secrets GitHub** (GITHUB_SECRETS_SETUP.md)

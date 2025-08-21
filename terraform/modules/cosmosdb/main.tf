@@ -47,18 +47,13 @@ resource "azurerm_cosmosdb_account" "main" {
   }
 
   # Network configuration (pode restringir por IP)
-  dynamic "ip_range_filter" {
-    for_each = var.allowed_ips != null ? [1] : []
-    content {
-      ip_range_filter = join(",", var.allowed_ips)
-    }
-  }
+  ip_range_filter = var.allowed_ips != null ? join(",", var.allowed_ips) : null
 
-  enable_automatic_failover = var.enable_automatic_failover
-  enable_multiple_write_locations = false
+  automatic_failover_enabled = var.enable_automatic_failover
+  multiple_write_locations_enabled = false
 
   # Free tier (se disponível)
-  enable_free_tier = var.enable_free_tier
+  free_tier_enabled = var.enable_free_tier
 
   tags = var.tags
 }

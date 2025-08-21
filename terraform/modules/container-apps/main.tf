@@ -10,23 +10,12 @@ terraform {
   }
 }
 
-# Log Analytics Workspace para Container Apps
-resource "azurerm_log_analytics_workspace" "main" {
-  name                = "${var.app_name}-logs"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  sku                 = "PerGB2018"
-  retention_in_days   = var.log_retention_days
-
-  tags = var.tags
-}
-
-# Container Apps Environment
+# Container Apps Environment (usa Log Analytics do Application Insights)
 resource "azurerm_container_app_environment" "main" {
   name                       = "${var.app_name}-env"
   location                   = var.location
   resource_group_name        = var.resource_group_name
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
 
   tags = var.tags
 }
@@ -268,6 +257,15 @@ resource "azurerm_container_app" "api" {
       env {
         name  = "RAG_API_URL"
         value = "https://${azurerm_container_app.rag_api.latest_revision_fqdn}"
+      }
+
+      # Application Insights para monitoramento
+      dynamic "env" {
+        for_each = var.application_insights_connection_string != null ? [1] : []
+        content {
+          name  = "APPLICATIONINSIGHTS_CONNECTION_STRING"
+          value = var.application_insights_connection_string
+        }
       }
 
       # Porta equivalente ao docker-compose

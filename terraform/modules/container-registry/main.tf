@@ -34,22 +34,12 @@ resource "azurerm_container_registry" "main" {
     }
   }
 
-  # Retention policy para economizar espaço
-  retention_policy_in_days = var.retention_days
-  trust_policy_enabled     = var.trust_policy_enabled
+  # Retention policy para economizar espaço (configurado via policy)
+  # Note: retention_policy_in_days não é mais argumento direto no azurerm 4.13+
+  trust_policy_enabled = var.trust_policy_enabled
   
-  # Webhook para notificar CI/CD
-  dynamic "webhook" {
-    for_each = var.webhooks
-    content {
-      name         = webhook.value.name
-      service_uri  = webhook.value.service_uri
-      actions      = webhook.value.actions
-      status       = webhook.value.status
-      scope        = webhook.value.scope
-      custom_headers = webhook.value.custom_headers
-    }
-  }
+  # Webhooks não são mais configurados aqui no azurerm 4.13+
+  # Serão configurados via azurerm_container_registry_webhook resource se necessário
 
   tags = var.tags
 }
