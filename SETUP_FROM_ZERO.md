@@ -227,7 +227,7 @@ gh secret set ARM_SUBSCRIPTION_ID --body="$SUBSCRIPTION_ID"
 
 # Terraform State (substitua pelos valores do seu setup)
 gh secret set TERRAFORM_STATE_RG --body="rg-sachat-terraform-state"
-gh secret set TERRAFORM_STATE_SA --body="nome-da-sua-storage-account"
+gh secret set TERRAFORM_STATE_SA --body="stsachatstate36681"
 
 # Cross-repo communication
 gh secret set APP_REPO_TOKEN --body="$GITHUB_TOKEN"
@@ -270,7 +270,7 @@ cd ../infra-sachat/terraform/environments/staging
 # 1. Configurar backend
 terraform init \
   -backend-config="resource_group_name=rg-sachat-terraform-state" \
-  -backend-config="storage_account_name=sua-storage-account" \
+  -backend-config="storage_account_name=stsachatstate36681" \
   -backend-config="container_name=tfstate" \
   -backend-config="key=staging.tfstate"
 

@@ -63,7 +63,7 @@ variable "max_replicas" {
 variable "app_image" {
   description = "Imagem Docker da aplicação"
   type        = string
-  default     = "ghcr.io/techacademialendaria/legendschat:latest"
+  default     = "nginx:alpine"  # Temporária até build da app
 }
 
 variable "app_cpu" {
@@ -101,7 +101,7 @@ variable "meilisearch_memory" {
 variable "rag_api_image" {
   description = "Imagem do RAG API"
   type        = string
-  default     = "ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest"
+  default     = "busybox:latest"  # Temporária
 }
 
 variable "rag_api_cpu" {
