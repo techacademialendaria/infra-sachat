@@ -152,7 +152,7 @@ jobs:
       uses: peter-evans/repository-dispatch@v2
       with:
         token: ${{ secrets.CROSS_REPO_TOKEN }}
-        repository: superagentes/legendschat  # Ajustar conforme necessário
+        repository: techacademialendaria/legendschat  # Ajustar conforme necessário
         event-type: infrastructure-updated
         client-payload: |
           {
