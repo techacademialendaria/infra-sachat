@@ -332,14 +332,8 @@ resource "azurerm_container_app" "frontend" {
       latest_revision = true
     }
 
-    # Custom domain (equivalente ao SSL do docker-compose)
-    dynamic "custom_domain" {
-      for_each = var.custom_domain != null ? [var.custom_domain] : []
-      content {
-        name           = custom_domain.value.domain_name
-        certificate_id = custom_domain.value.certificate_id
-      }
-    }
+    # NOTA: custom_domain foi removido pois é gerenciado automaticamente pelo Azure
+    # Para domínios personalizados, usar o recurso azurerm_container_app_custom_domain separadamente
   }
 
   tags = var.tags
