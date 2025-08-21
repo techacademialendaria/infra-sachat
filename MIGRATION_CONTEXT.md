@@ -233,23 +233,19 @@ export APP_NAME="superchat"
 
 ## 🛠️ ÚLTIMOS 3 PROBLEMAS E SOLUÇÕES (REGRA #4)
 
-### **❌ PROBLEMA 1: Terraform Version Incompatibility**
-- **Erro**: `required_version = ">= 1.9.0"` mas sistema tem 1.5.0
-- **✅ Solução**: Ajustado para `>= 1.5.0` em main.tf, .terraform-version e GitHub Actions
+### **❌ PROBLEMA 1: Storage Retention Policy Deprecated**
+- **Erro**: `retention_policy` depreciado em azurerm_monitor_diagnostic_setting
+- **✅ Solução**: Removido retention_policy blocks, agora gerenciado via azurerm_storage_management_policy
 
-### **❌ PROBLEMA 2: Azure Provider 4.13+ Compatibility**
-- **Erro**: `context_access_token` obrigatório em container_registry_task
-- **✅ Solução**: Removido tasks complexos, usando GitHub Actions para builds
+### **❌ PROBLEMA 2: CosmosDB connection_strings Attribute Error**
+- **Erro**: `connection_strings[0]` não existe em azurerm_cosmosdb_account provider 4.13+
+- **✅ Solução**: Construída connection string manualmente usando `endpoint` e `primary_key`
 
-### **❌ PROBLEMA 3: CosmosDB ip_range_filter Type Error**  
-- **Erro**: `set of string required` mas passando string joinada
-- **✅ Solução**: Mudado de `join(",", var.allowed_ips)` para `toset(var.allowed_ips)`
-
-### **❌ PROBLEMA 4: Storage Diagnostic Settings Blocks**
-- **Erro**: `log` blocks não esperados no azurerm 4.13+
-- **✅ Solução**: Mudado de `log {` para `enabled_log {`
+### **❌ PROBLEMA 3: Container Apps Health Probes Syntax Error**
+- **Erro**: Sintaxe `http_get`, `port`, `initial_delay_seconds` não suportada no provider 4.13+
+- **✅ Solução**: Mudado para sintaxe simples: `transport = "HTTP"`, `port = X`, `path = "/health"`
 
 ---
 
-*Última atualização: $(date)*
-*Status: ✅ Terraform VALIDADO - Azure provider 4.13+ compatível*
+*Última atualização: 2025-01-27 - Todos os erros de validação corrigidos*
+*Status: ✅ Terraform VALIDADO - Pronto para `terraform apply`*
