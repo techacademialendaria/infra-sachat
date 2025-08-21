@@ -125,8 +125,8 @@ output "next_steps" {
 output "new_env_variables" {
   description = "Variáveis para atualizar o .env após migração"
   value = {
-    MONGO_URI                        = module.cosmosdb.connection_string
-    AZURE_STORAGE_CONNECTION_STRING  = module.storage.connection_string
+    MONGO_URI                       = module.cosmosdb.connection_string
+    AZURE_STORAGE_CONNECTION_STRING = module.storage.connection_string
     AZURE_CONTAINER_NAME            = "files"
     DB_HOST                         = module.postgresql.fqdn
     MEILI_HOST                      = module.container_apps.meilisearch_url
@@ -140,9 +140,9 @@ output "new_env_variables" {
 output "cost_monitoring" {
   description = "Informações para monitoramento de custos"
   value = {
-    budget_limit     = "${var.budget_limit} USD/mês"
+    budget_limit      = "${var.budget_limit} USD/mês"
     infracost_enabled = var.infracost_config.enabled
-    cost_tags       = var.default_tags
-    scale_to_zero   = "CosmosDB Serverless + Container Apps auto-scaling"
+    cost_tags         = var.default_tags
+    scale_to_zero     = "CosmosDB Serverless + Container Apps auto-scaling"
   }
 }
