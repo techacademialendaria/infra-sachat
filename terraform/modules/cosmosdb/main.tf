@@ -110,7 +110,8 @@ resource "azurerm_key_vault_secret" "connection_string" {
   count = var.key_vault_id != null ? 1 : 0
   
   name         = "${var.app_name}-cosmosdb-connection"
-  value        = azurerm_cosmosdb_account.main.connection_strings[0]
+  # Connection string construída manualmente (connection_strings não existe no provider 4.13+)
+  value        = "mongodb://${azurerm_cosmosdb_account.main.name}:${azurerm_cosmosdb_account.main.primary_key}@${azurerm_cosmosdb_account.main.name}.mongo.cosmos.azure.com:10255/${var.database_name}?ssl=true&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@${azurerm_cosmosdb_account.main.name}@"
   key_vault_id = var.key_vault_id
   
   tags = var.tags

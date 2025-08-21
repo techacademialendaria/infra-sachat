@@ -72,31 +72,17 @@ resource "azurerm_container_app" "meilisearch" {
         }
       }
 
-      # Porta equivalente ao docker-compose
-      port {
-        name      = "http"
-        protocol  = "HTTP"
-        port      = var.meilisearch_config.target_port
-        target_port = var.meilisearch_config.target_port
-      }
-
-      # Health probe
+      # Health probes - sintaxe correta para provider 4.13+
       liveness_probe {
-        http_get {
-          path = "/health"
-          port = var.meilisearch_config.target_port
-        }
-        initial_delay_seconds = 30
-        period_seconds       = 10
+        transport = "HTTP"
+        port      = var.meilisearch_config.target_port
+        path      = "/health"
       }
 
       readiness_probe {
-        http_get {
-          path = "/health"
-          port = var.meilisearch_config.target_port
-        }
-        initial_delay_seconds = 5
-        period_seconds       = 5
+        transport = "HTTP"
+        port      = var.meilisearch_config.target_port
+        path      = "/health"
       }
     }
   }
@@ -157,31 +143,17 @@ resource "azurerm_container_app" "rag_api" {
         value = var.postgresql_host
       }
 
-      # Porta equivalente ao docker-compose
-      port {
-        name        = "http"
-        protocol    = "HTTP"
-        port        = var.rag_api_config.target_port
-        target_port = var.rag_api_config.target_port
-      }
-
-      # Health probes
+      # Health probes - sintaxe correta para provider 4.13+
       liveness_probe {
-        http_get {
-          path = "/health"
-          port = var.rag_api_config.target_port
-        }
-        initial_delay_seconds = 60  # RAG API demora mais para iniciar
-        period_seconds       = 30
+        transport = "HTTP"
+        port      = var.rag_api_config.target_port
+        path      = "/health"
       }
 
       readiness_probe {
-        http_get {
-          path = "/health"
-          port = var.rag_api_config.target_port
-        }
-        initial_delay_seconds = 10
-        period_seconds       = 10
+        transport = "HTTP"
+        port      = var.rag_api_config.target_port
+        path      = "/health"
       }
     }
   }
@@ -268,31 +240,17 @@ resource "azurerm_container_app" "api" {
         }
       }
 
-      # Porta equivalente ao docker-compose
-      port {
-        name        = "http"
-        protocol    = "HTTP"
-        port        = var.api_config.target_port
-        target_port = var.api_config.target_port
-      }
-
-      # Health probes
+      # Health probes - sintaxe correta para provider 4.13+
       liveness_probe {
-        http_get {
-          path = "/api/health"
-          port = var.api_config.target_port
-        }
-        initial_delay_seconds = 60
-        period_seconds       = 30
+        transport = "HTTP"
+        port      = var.api_config.target_port
+        path      = "/api/health"
       }
 
       readiness_probe {
-        http_get {
-          path = "/api/health"
-          port = var.api_config.target_port
-        }
-        initial_delay_seconds = 10
-        period_seconds       = 10
+        transport = "HTTP"
+        port      = var.api_config.target_port
+        path      = "/api/health"
       }
     }
   }
@@ -349,31 +307,17 @@ resource "azurerm_container_app" "frontend" {
         value = "https://${azurerm_container_app.api.latest_revision_fqdn}"
       }
 
-      # Porta equivalente ao docker-compose (80)
-      port {
-        name        = "http"
-        protocol    = "HTTP"
-        port        = var.frontend_config.target_port
-        target_port = var.frontend_config.target_port
-      }
-
-      # Health probes
+      # Health probes - sintaxe correta para provider 4.13+
       liveness_probe {
-        http_get {
-          path = "/"
-          port = var.frontend_config.target_port
-        }
-        initial_delay_seconds = 10
-        period_seconds       = 30
+        transport = "HTTP"
+        port      = var.frontend_config.target_port
+        path      = "/"
       }
 
       readiness_probe {
-        http_get {
-          path = "/"
-          port = var.frontend_config.target_port
-        }
-        initial_delay_seconds = 5
-        period_seconds       = 5
+        transport = "HTTP"
+        port      = var.frontend_config.target_port
+        path      = "/"
       }
     }
   }

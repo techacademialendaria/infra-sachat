@@ -17,7 +17,8 @@ output "endpoint" {
 
 output "connection_string" {
   description = "Connection string para usar no .env (substitui MONGO_URI)"
-  value       = azurerm_cosmosdb_account.main.connection_strings[0]
+  # Connection string construída manualmente (connection_strings não existe no provider 4.13+)
+  value       = "mongodb://${azurerm_cosmosdb_account.main.name}:${azurerm_cosmosdb_account.main.primary_key}@${azurerm_cosmosdb_account.main.name}.mongo.cosmos.azure.com:10255/${azurerm_cosmosdb_mongo_database.librechat.name}?ssl=true&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@${azurerm_cosmosdb_account.main.name}@"
   sensitive   = true
 }
 
@@ -53,10 +54,11 @@ output "migration_info" {
   description = "Informações para migração do MongoDB local"
   value = {
     original_mongo_uri    = "mongodb://127.0.0.1:27017/LibreChat"
-    new_connection_string = azurerm_cosmosdb_account.main.connection_strings[0]
+    # Connection string construída manualmente
+    new_connection_string = "mongodb://${azurerm_cosmosdb_account.main.name}:${azurerm_cosmosdb_account.main.primary_key}@${azurerm_cosmosdb_account.main.name}.mongo.cosmos.azure.com:10255/${azurerm_cosmosdb_mongo_database.librechat.name}?ssl=true&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@${azurerm_cosmosdb_account.main.name}@"
     database_name        = azurerm_cosmosdb_mongo_database.librechat.name
     collections          = [for collection in azurerm_cosmosdb_mongo_collection.collections : collection.name]
-    migration_command    = "mongorestore --uri '${azurerm_cosmosdb_account.main.connection_strings[0]}' --db LibreChat --dir ./mongodb_backup/LibreChat"
+    migration_command    = "mongorestore --uri 'mongodb://${azurerm_cosmosdb_account.main.name}:${azurerm_cosmosdb_account.main.primary_key}@${azurerm_cosmosdb_account.main.name}.mongo.cosmos.azure.com:10255/${azurerm_cosmosdb_mongo_database.librechat.name}?ssl=true&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@${azurerm_cosmosdb_account.main.name}@' --db LibreChat --dir ./mongodb_backup/LibreChat"
   }
   sensitive = true
 }
@@ -65,7 +67,8 @@ output "migration_info" {
 output "env_variables" {
   description = "Variáveis para atualizar no .env"
   value = {
-    MONGO_URI = azurerm_cosmosdb_account.main.connection_strings[0]
+    # Connection string construída manualmente
+    MONGO_URI = "mongodb://${azurerm_cosmosdb_account.main.name}:${azurerm_cosmosdb_account.main.primary_key}@${azurerm_cosmosdb_account.main.name}.mongo.cosmos.azure.com:10255/${azurerm_cosmosdb_mongo_database.librechat.name}?ssl=true&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@${azurerm_cosmosdb_account.main.name}@"
   }
   sensitive = true
 }

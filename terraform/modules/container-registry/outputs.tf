@@ -59,11 +59,11 @@ output "rag_api_image_url" {
   value       = "${azurerm_container_registry.main.login_server}/rag-api:latest"
 }
 
-# Build tasks info
-output "api_build_task_name" {
-  description = "Nome da task de build da API"
-  value       = azurerm_container_registry_task.api_build.name
-}
+# Build tasks info - REMOVIDO (usando GitHub Actions)
+# output "api_build_task_name" {
+#   description = "Nome da task de build da API"
+#   value       = azurerm_container_registry_task.api_build.name
+# }
 
 # Para usar em GitHub Actions
 output "github_actions_config" {

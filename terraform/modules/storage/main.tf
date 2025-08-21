@@ -150,37 +150,21 @@ resource "azurerm_monitor_diagnostic_setting" "storage" {
 
   enabled_log {
     category = "StorageRead"
-
-    retention_policy {
-      enabled = true
-      days    = 30
-    }
+    # retention_policy removido - agora use azurerm_storage_management_policy
   }
 
   enabled_log {
     category = "StorageWrite"
-
-    retention_policy {
-      enabled = true
-      days    = 30
-    }
+    # retention_policy removido - agora use azurerm_storage_management_policy
   }
 
   enabled_log {
     category = "StorageDelete"
-
-    retention_policy {
-      enabled = true
-      days    = 30
-    }
+    # retention_policy removido - agora use azurerm_storage_management_policy
   }
 
   metric {
     category = "Transaction"
-
-    retention_policy {
-      enabled = true
-      days    = 30
-    }
+    # retention_policy removido - logs são gerenciados pelo Log Analytics Workspace
   }
 }
