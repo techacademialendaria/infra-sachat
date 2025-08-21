@@ -46,7 +46,7 @@ SP_OUTPUT=$(az ad sp create-for-rbac \
   --scopes /subscriptions/$(az account show --query id -o tsv) \
   --sdk-auth)
 
-echo "📋 SECRETS PARA GITHUB (infra-sachat):"
+echo "📋 SECRETS PARA GITHUB (infra-sachat):" 
 echo "ARM_CLIENT_ID: $(echo $SP_OUTPUT | jq -r '.clientId')"
 echo "ARM_CLIENT_SECRET: $(echo $SP_OUTPUT | jq -r '.clientSecret')"
 echo "ARM_SUBSCRIPTION_ID: $(echo $SP_OUTPUT | jq -r '.subscriptionId')"
