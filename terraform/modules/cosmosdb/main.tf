@@ -47,7 +47,7 @@ resource "azurerm_cosmosdb_account" "main" {
   }
 
   # Network configuration (pode restringir por IP)
-  ip_range_filter = var.allowed_ips != null ? join(",", var.allowed_ips) : null
+  ip_range_filter = var.allowed_ips != null ? toset(var.allowed_ips) : null
 
   automatic_failover_enabled = var.enable_automatic_failover
   multiple_write_locations_enabled = false

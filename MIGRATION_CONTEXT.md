@@ -110,6 +110,7 @@ rag_api          → superchat-rag-api (1-5 replicas)
 - [x] **GitHub Actions**: Atualizadas para versões 2025 (v4, v2)
 - [x] **Terraform Formatting**: Corrigido fmt em todos os arquivos
 - [x] **Application Insights**: Módulo criado (100MB/dia, alertas, dashboard)
+- [x] **Terraform Validation**: Corrigidos erros Azure provider 4.13+
 
 ### 📋 PRÓXIMOS PASSOS:
 1. **Configurar Secrets GitHub** (GITHUB_SECRETS_SETUP.md)
@@ -230,5 +231,25 @@ export APP_NAME="superchat"
 
 ---
 
+## 🛠️ ÚLTIMOS 3 PROBLEMAS E SOLUÇÕES (REGRA #4)
+
+### **❌ PROBLEMA 1: Terraform Version Incompatibility**
+- **Erro**: `required_version = ">= 1.9.0"` mas sistema tem 1.5.0
+- **✅ Solução**: Ajustado para `>= 1.5.0` em main.tf, .terraform-version e GitHub Actions
+
+### **❌ PROBLEMA 2: Azure Provider 4.13+ Compatibility**
+- **Erro**: `context_access_token` obrigatório em container_registry_task
+- **✅ Solução**: Removido tasks complexos, usando GitHub Actions para builds
+
+### **❌ PROBLEMA 3: CosmosDB ip_range_filter Type Error**  
+- **Erro**: `set of string required` mas passando string joinada
+- **✅ Solução**: Mudado de `join(",", var.allowed_ips)` para `toset(var.allowed_ips)`
+
+### **❌ PROBLEMA 4: Storage Diagnostic Settings Blocks**
+- **Erro**: `log` blocks não esperados no azurerm 4.13+
+- **✅ Solução**: Mudado de `log {` para `enabled_log {`
+
+---
+
 *Última atualização: $(date)*
-*Status: ✅ GitHub Actions ATUALIZADO - Versões 2025 + Secrets configurados*
+*Status: ✅ Terraform VALIDADO - Azure provider 4.13+ compatível*
