@@ -10,12 +10,13 @@ variable "resource_group_name" {
 variable "location" {
   description = "Região Azure para deploy dos recursos"
   type        = string
-  default     = "eastus"
+  default     = "brazilsouth"
 
   validation {
     condition = contains([
       "eastus", "eastus2", "westus2", "westus3",
-      "centralus", "southcentralus", "westcentralus"
+      "centralus", "southcentralus", "westcentralus",
+      "brazilsouth", "brazilsoutheast"
     ], var.location)
     error_message = "Location deve ser uma região Azure válida para Container Apps."
   }

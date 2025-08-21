@@ -44,27 +44,32 @@ resource "azurerm_container_registry" "main" {
   tags = var.tags
 }
 
-# Service Principal para GitHub Actions
-resource "azurerm_user_assigned_identity" "registry" {
-  name                = "${var.app_name}-registry-identity"
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  
-  tags = var.tags
-}
+# Service Principal para GitHub Actions (simplificado - configurar manualmente)
+# Comentado para evitar problemas de permissão 403
+# resource "azurerm_user_assigned_identity" "registry" {
+#   name                = "${var.app_name}-registry-identity"
+#   resource_group_name = var.resource_group_name
+#   location            = var.location
+#   
+#   tags = var.tags
+# }
 
-# Role assignment para push/pull
-resource "azurerm_role_assignment" "registry_push" {
-  scope                = azurerm_container_registry.main.id
-  role_definition_name = "AcrPush"
-  principal_id         = azurerm_user_assigned_identity.registry.principal_id
-}
+# Role assignments comentados para evitar erro 403 AuthorizationFailed
+# Configurar manualmente via Azure CLI após deployment:
+# az role assignment create --assignee <principal-id> --role "AcrPush" --scope <registry-id>
+# az role assignment create --assignee <principal-id> --role "AcrPull" --scope <registry-id>
 
-resource "azurerm_role_assignment" "registry_pull" {
-  scope                = azurerm_container_registry.main.id
-  role_definition_name = "AcrPull"
-  principal_id         = azurerm_user_assigned_identity.registry.principal_id
-}
+# resource "azurerm_role_assignment" "registry_push" {
+#   scope                = azurerm_container_registry.main.id
+#   role_definition_name = "AcrPush"
+#   principal_id         = azurerm_user_assigned_identity.registry.principal_id
+# }
+# 
+# resource "azurerm_role_assignment" "registry_pull" {
+#   scope                = azurerm_container_registry.main.id
+#   role_definition_name = "AcrPull"
+#   principal_id         = azurerm_user_assigned_identity.registry.principal_id
+# }
 
 # Container Registry Tasks são complexos no Azure provider 4.13+
 # Usando GitHub Actions para builds (mais simples e confiável)

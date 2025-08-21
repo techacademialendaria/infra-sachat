@@ -44,12 +44,12 @@ rag_api          → superchat-rag-api (1-5 replicas)
 ```
 
 ### Recursos Azure:
-- **Resource Group**: `rg-superchat-production-210825` (será criado)
-- **Container Registry**: `superchatregistry.azurecr.io` (será criado)
-- **Storage Account**: `superchatfiles` (será criado - para substituir volumes locais)
-- **CosmosDB**: `superchat-cosmosdb` (será criado - ServerLess, MongoDB API)
-- **PostgreSQL**: `superchat-postgresql` (será criado - pgvector, B1ms)
-- **Container Apps Environment**: `superchat-env` (será criado)
+- **Resource Group**: `rg-superchat-production-210825` (Brazil South - será criado)
+- **Container Registry**: `superchatregistry.azurecr.io` (Brazil South - será criado, admin_enabled=true)
+- **Storage Account**: `superchatfiles` (Brazil South - será criado - para substituir volumes locais)
+- **CosmosDB**: `superchat-cosmosdb` (Brazil South - será criado - ServerLess, MongoDB API)
+- **PostgreSQL**: `superchat-postgresql` (Brazil South - será criado - pgvector, B1ms)
+- **Container Apps Environment**: `superchat-env` (Brazil South - será criado)
 
 ---
 
@@ -172,7 +172,7 @@ docker compose -f ./deploy-compose.yml up -d --build
 ### Azure:
 ```bash
 export RESOURCE_GROUP="rg-superchat-production-210825"
-export LOCATION="eastus"
+export LOCATION="brazilsouth"
 export APP_NAME="superchat"
 ```
 
@@ -233,20 +233,20 @@ export APP_NAME="superchat"
 
 ## 🛠️ ÚLTIMOS 3 PROBLEMAS E SOLUÇÕES (REGRA #4)
 
-### **❌ PROBLEMA 1: Resource Group Already Exists - Terraform Cannot Create**
+### **❌ PROBLEMA 1: Azure East US Region Restrictions - Multiple Services Unavailable**
+- **Erro**: CosmosDB "high demand in East US region" + PostgreSQL "restricted from provisioning in location 'eastus'" + Container Registry permissions 403
+- **✅ Solução**: Mudança para região "brazilsouth" (latência baixa + sem restrições) + simplificação Container Registry (sem role assignments automáticos)
+
+### **❌ PROBLEMA 2: Resource Group Already Exists - Terraform Cannot Create**
 - **Erro**: A resource with the ID "/subscriptions/***/resourceGroups/rg-superchat-prod" already exists - to be managed via Terraform this resource needs to be imported into the State
 - **✅ Solução**: Alterado nome para "rg-superchat-production-210825" no terraform.tfvars e variables.tf (evita conflito)
 
-### **❌ PROBLEMA 2: Smart Detection Rule Name Invalid**
-- **Erro**: expected name to be one of ["Slow page load time" "Slow server response time"...], got "Failure Anomalies"
-- **✅ Solução**: Mudado para "Abnormal rise in exception volume" (valor da lista predefinida Azure)
-
-### **❌ PROBLEMA 3: Container Apps Custom Domain Unconfigurable**
-- **Erro**: Can't configure a value for "ingress.0.custom_domain": its value will be decided automatically
-- **✅ Solução**: Removido `custom_domain` do bloco ingress (gerenciado automaticamente pelo Azure)
+### **❌ PROBLEMA 3: Container Registry Role Assignment AuthorizationFailed 403**
+- **Erro**: AuthorizationFailed - client does not have authorization to perform action 'Microsoft.Authorization/roleAssignments/write'
+- **✅ Solução**: Comentados role assignments no módulo container-registry (configurar manualmente via Azure CLI após deployment)
 
 ---
 
-*Última atualização: 2025-01-27 - Resource Group naming conflict resolvido*
-*Status: ✅ Terraform PRONTO - Resource Group renamed para rg-superchat-production-210825*
-*Próximo passo: `terraform apply` com novo Resource Group name*
+*Última atualização: 2025-01-27 - Region + Permissions + Resource Group resolvidos*
+*Status: ✅ Terraform PRONTO - Brazil South + Container Registry simplificado + RG renamed*
+*Próximo passo: `terraform apply` com Brazil South region (sem restrições)*

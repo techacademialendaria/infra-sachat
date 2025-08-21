@@ -27,21 +27,21 @@ output "admin_password" {
   sensitive   = true
 }
 
-# Service Principal info para GitHub Actions
-output "identity_client_id" {
-  description = "Client ID da identity para GitHub Actions"
-  value       = azurerm_user_assigned_identity.registry.client_id
-}
+# Service Principal info para GitHub Actions (comentado - configurar manualmente)
+# output "identity_client_id" {
+#   description = "Client ID da identity para GitHub Actions"
+#   value       = azurerm_user_assigned_identity.registry.client_id
+# }
 
-output "identity_principal_id" {
-  description = "Principal ID da identity"
-  value       = azurerm_user_assigned_identity.registry.principal_id
-}
+# output "identity_principal_id" {
+#   description = "Principal ID da identity"
+#   value       = azurerm_user_assigned_identity.registry.principal_id
+# }
 
-output "identity_tenant_id" {
-  description = "Tenant ID da identity"
-  value       = azurerm_user_assigned_identity.registry.tenant_id
-}
+# output "identity_tenant_id" {
+#   description = "Tenant ID da identity"
+#   value       = azurerm_user_assigned_identity.registry.tenant_id
+# }
 
 # URLs das imagens para Container Apps
 output "api_image_url" {
@@ -65,14 +65,14 @@ output "rag_api_image_url" {
 #   value       = azurerm_container_registry_task.api_build.name
 # }
 
-# Para usar em GitHub Actions
-output "github_actions_config" {
-  description = "Configuração para GitHub Actions"
-  value = {
-    registry_name    = azurerm_container_registry.main.name
-    login_server     = azurerm_container_registry.main.login_server
-    client_id        = azurerm_user_assigned_identity.registry.client_id
-    tenant_id        = azurerm_user_assigned_identity.registry.tenant_id
-  }
-  sensitive = true
-}
+# Para usar em GitHub Actions (comentado - configurar manualmente após deployment)
+# output "github_actions_config" {
+#   description = "Configuração para GitHub Actions"
+#   value = {
+#     registry_name    = azurerm_container_registry.main.name
+#     login_server     = azurerm_container_registry.main.login_server
+#     client_id        = azurerm_user_assigned_identity.registry.client_id
+#     tenant_id        = azurerm_user_assigned_identity.registry.tenant_id
+#   }
+#   sensitive = true
+# }

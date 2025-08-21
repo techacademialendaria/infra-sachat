@@ -3,7 +3,7 @@
 
 # Configurações Básicas
 resource_group_name = "rg-superchat-production-210825"
-location            = "eastus"
+location            = "brazilsouth"
 app_name            = "superchat"
 environment         = "production"
 
