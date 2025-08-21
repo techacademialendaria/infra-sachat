@@ -1,5 +1,5 @@
 # 🚀 CONTAINER APPS MODULE - SUBSTITUI DOCKER COMPOSE
-# 4 aplicações: API, Frontend, Meilisearch, RAG API
+# 4 aplicações: API, Frontend, Meilisearch, RAG API 
 
 terraform {
   required_providers {
