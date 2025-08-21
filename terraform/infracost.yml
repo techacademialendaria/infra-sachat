@@ -1,0 +1,26 @@
+# 💰 INFRACOST - MONITORAMENTO DE CUSTOS SUPERCHAT
+# Configuração para estimar e monitorar custos da migração Azure
+
+version: 0.1
+
+projects:
+  - path: environments/prod
+    name: superchat-production
+    
+    # Configurações específicas do projeto
+    terraform_var_files:
+      - terraform.tfvars
+    
+    # Configurações de usage para estimativas precisas
+    usage_file: usage.yml
+
+# Configurações globais
+currency: USD
+enable_dashboard: true
+
+# Configurações de alertas (opcional)
+# cost_thresholds:
+#   - threshold: 100  # $100/mês
+#     percentage: 80  # 80% do threshold
+#   - threshold: 150  # $150/mês (limite do projeto)
+#     percentage: 90  # 90% do threshold

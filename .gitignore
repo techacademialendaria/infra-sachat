@@ -1,1 +1,53 @@
+# 🔒 SECRETS E CREDENCIAIS - NUNCA COMMITAR!
 azure-credentials.json
+*.credentials.json
+.env
+.env.*
+.env-local
+.env-*
+terraform.tfvars.backup
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+
+# Arquivos temporários
+*.tmp
+*.temp
+*.bak
+
+# Logs
+*.log
+logs/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node modules (se houver)
+node_modules/
+
+# Python (se houver)
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# Terraform específicos 
+*.tfplan
+*.tfplan.json
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc

@@ -1,0 +1,104 @@
+# 📊 USAGE PATTERNS - SUPERCHAT
+# Baseado na análise atual: 1.1GB RAM total, 4.1MB MongoDB, 352K files
+
+version: 0.1
+
+# CosmosDB Serverless (substitui MongoDB local de 4.1MB)
+resource_type_default_usage:
+  azurerm_cosmosdb_account:
+    # Request Units baseadas no volume atual (4.1MB dados)
+    request_units: 1000  # RU/s para baixo volume inicial
+    storage_gb: 1        # 1GB (4.1MB atual + buffer)
+    
+# PostgreSQL Flexible Server (substitui vectordb container)  
+  azurerm_postgresql_flexible_server:
+    # Uso baseado no container vectordb atual
+    storage_gb: 32       # 32GB para vetores
+    backup_retention_days: 7
+    
+# Container Apps (baseado no uso atual de RAM)
+  azurerm_container_app:
+    # API - 411MB atual → 2GB Azure
+    monthly_cpu_hours: 1440    # 2 replicas * 720h * 1 vCPU
+    monthly_memory_gb_hours: 2880  # 2 replicas * 720h * 2GB
+    
+# Azure Storage (substitui volumes locais: 308K images + 44K uploads)
+  azurerm_storage_account:
+    storage_gb: 1           # 1GB (352K atual + buffer para crescimento)
+    monthly_tier_1_requests: 10000   # Requests para imagens/uploads
+    monthly_tier_2_requests: 5000    # Requests para logs
+    outbound_data_transfer_gb: 10     # Transfer para downloads
+
+# Específico por recurso (cenários de uso)
+resource_usage:
+  
+  # CosmosDB para diferentes cenários
+  module.cosmosdb.azurerm_cosmosdb_account.main:
+    request_units: 1000     # Cenário baixo uso (atual)
+    storage_gb: 1
+    
+  # PostgreSQL para RAG/vectordb  
+  module.postgresql.azurerm_postgresql_flexible_server.main:
+    storage_gb: 32
+    compute_hours: 720      # 24/7 operation
+    
+  # Container Apps - cenários por aplicação
+  
+  # API (maior uso - equivalente ao LibreChat-API atual)
+  module.container_apps.azurerm_container_app.api:
+    monthly_cpu_hours: 1440      # 2 replicas base
+    monthly_memory_gb_hours: 2880 # 2GB por replica
+    
+  # Frontend (NGINX leve)  
+  module.container_apps.azurerm_container_app.frontend:
+    monthly_cpu_hours: 180       # 1 replica * 0.25 vCPU
+    monthly_memory_gb_hours: 360  # 1 replica * 0.5GB
+    
+  # Meilisearch (busca ocasional)
+  module.container_apps.azurerm_container_app.meilisearch:
+    monthly_cpu_hours: 360       # 1 replica * 0.5 vCPU  
+    monthly_memory_gb_hours: 720  # 1 replica * 1GB
+    
+  # RAG API (processamento de documentos)
+  module.container_apps.azurerm_container_app.rag_api:
+    monthly_cpu_hours: 360       # 1 replica * 0.5 vCPU
+    monthly_memory_gb_hours: 720  # 1 replica * 1GB
+
+# Cenários de scaling (para comparação)
+scenarios:
+  
+  # Cenário atual (migração direta)
+  current_usage:
+    description: "Migração direta - uso atual"
+    resource_usage:
+      module.cosmosdb.azurerm_cosmosdb_account.main:
+        request_units: 1000
+        storage_gb: 1
+      module.container_apps.azurerm_container_app.api:
+        monthly_cpu_hours: 1440
+        monthly_memory_gb_hours: 2880
+        
+  # Cenário baixo (desenvolvimento/teste)  
+  low_usage:
+    description: "Uso baixo - desenvolvimento"
+    resource_usage:
+      module.cosmosdb.azurerm_cosmosdb_account.main:
+        request_units: 400
+        storage_gb: 1
+      module.container_apps.azurerm_container_app.api:
+        monthly_cpu_hours: 720   # 1 replica
+        monthly_memory_gb_hours: 1440
+        
+  # Cenário alto (2000 usuários simultâneos)
+  high_usage:
+    description: "Uso alto - 2000 usuários"
+    resource_usage:
+      module.cosmosdb.azurerm_cosmosdb_account.main:
+        request_units: 4000
+        storage_gb: 10
+      module.container_apps.azurerm_container_app.api:
+        monthly_cpu_hours: 7200  # 10 replicas
+        monthly_memory_gb_hours: 14400
+      module.container_apps.azurerm_container_app.frontend:
+        monthly_cpu_hours: 900   # 5 replicas  
+        monthly_memory_gb_hours: 1800
