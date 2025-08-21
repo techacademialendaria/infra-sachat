@@ -1,0 +1,162 @@
+# 🚀 TERRAFORM DEPLOY - INFRA-SACHAT
+# Deploy da infraestrutura Azure via Terraform
+
+name: 'Terraform Deploy'
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/terraform-deploy.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'terraform/**'
+  
+  # Permitir trigger manual
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Terraform action (plan/apply/destroy)'
+        required: true
+        default: 'plan'
+        type: choice
+        options:
+        - plan
+        - apply
+        - destroy
+
+env:
+  # Usar secrets do GitHub diretamente (mais seguro)
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+  TF_VAR_github_token: ${{ secrets.GITHUB_TOKEN }}
+  TF_VAR_postgresql_admin_password: ${{ secrets.POSTGRESQL_ADMIN_PASSWORD }}
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform/environments/prod
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Azure Credentials
+      run: |
+        # Usar secrets diretamente (mais seguro, sem arquivos)
+        echo "✅ Azure credentials loaded from GitHub secrets"
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.9.8
+
+    - name: Setup Infracost
+      uses: infracost/actions/setup@v3
+      with:
+        api-key: ${{ secrets.INFRACOST_API_KEY }}
+
+    - name: Terraform Format Check
+      run: terraform fmt -check -recursive
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Validate
+      run: terraform validate
+
+    - name: Generate Infracost Baseline
+      if: github.event_name == 'pull_request'
+      run: |
+        infracost breakdown --path=. \
+          --format=json \
+          --out-file=/tmp/infracost-base.json
+
+    - name: Terraform Plan
+      id: plan
+      run: |
+        terraform plan -no-color -out=tfplan
+        echo "plan_exitcode=$?" >> $GITHUB_OUTPUT
+
+    - name: Generate Infracost Diff
+      if: github.event_name == 'pull_request'
+      run: |
+        infracost diff --path=. \
+          --format=json \
+          --compare-to=/tmp/infracost-base.json \
+          --out-file=/tmp/infracost.json
+        
+        infracost comment github --path=/tmp/infracost.json \
+          --repo=$GITHUB_REPOSITORY \
+          --github-token=${{ secrets.GITHUB_TOKEN }} \
+          --pull-request=${{ github.event.pull_request.number }} \
+          --behavior=update
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event.inputs.action == 'apply')
+      run: terraform apply -auto-approve tfplan
+
+    - name: Terraform Destroy
+      if: github.event.inputs.action == 'destroy'
+      run: terraform destroy -auto-approve
+
+    - name: Update Migration Context
+      if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event.inputs.action == 'apply')
+      run: |
+        # Atualizar MIGRATION_CONTEXT.md com status
+        cd ../../../
+        
+        # Obter outputs do Terraform
+        FRONTEND_URL=$(terraform -chdir=terraform/environments/prod output -raw frontend_url 2>/dev/null || echo "pending")
+        
+        # Atualizar contexto
+        sed -i "s/Status: Criando módulos Terraform.*/Status: ✅ Infraestrutura Azure criada - $FRONTEND_URL/" MIGRATION_CONTEXT.md
+        
+        # Commit se houver mudanças
+        if git diff --quiet MIGRATION_CONTEXT.md; then
+          echo "No changes to commit"
+        else
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add MIGRATION_CONTEXT.md
+          git commit -m "🚀 Update migration status: Azure infrastructure deployed"
+          git push
+        fi
+
+    - name: Upload Terraform Plan
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: terraform-plan
+        path: terraform/environments/prod/tfplan
+        retention-days: 5
+
+  # Job para notificar o repositório legendschat
+  notify-legendschat:
+    name: 'Notify LibreChat Repo'
+    runs-on: ubuntu-latest
+    needs: terraform
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Trigger LibreChat Build
+      uses: peter-evans/repository-dispatch@v2
+      with:
+        token: ${{ secrets.CROSS_REPO_TOKEN }}
+        repository: superagentes/legendschat  # Ajustar conforme necessário
+        event-type: infrastructure-updated
+        client-payload: |
+          {
+            "infrastructure_status": "deployed",
+            "registry_url": "${{ needs.terraform.outputs.container_registry_url }}",
+            "triggered_by": "${{ github.actor }}"
+          }
