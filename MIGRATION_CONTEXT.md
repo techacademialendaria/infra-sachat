@@ -228,4 +228,4 @@ export APP_NAME="superchat"
 ---
 
 *Última atualização: $(date)*
-*Status: ✅ Estrutura Terraform COMPLETA - Pronto para deploy Azure!*
+*Status: ✅ GitHub Actions ATUALIZADO - Versões 2025 + Secrets configurados*
