@@ -40,9 +40,12 @@ resource "azurerm_postgresql_flexible_server" "main" {
   auto_grow_enabled = true
   
   # High availability (opcional - custo adicional)
-  high_availability {
-    mode                      = var.high_availability_enabled ? "ZoneRedundant" : "Disabled"
-    standby_availability_zone = var.high_availability_enabled ? "2" : null
+  dynamic "high_availability" {
+    for_each = var.high_availability_enabled ? [1] : []
+    content {
+      mode                      = "ZoneRedundant"
+      standby_availability_zone = "2"
+    }
   }
 
   # Maintenance window

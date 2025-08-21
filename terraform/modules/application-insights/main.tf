@@ -66,9 +66,9 @@ resource "azurerm_monitor_action_group" "main" {
   tags = var.tags
 }
 
-# Metric Alerts para Container Apps
+# Metric Alerts para Container Apps (só cria se tiver container apps)
 resource "azurerm_monitor_metric_alert" "cpu_high" {
-  count = var.enable_alerts ? 1 : 0
+  count = var.enable_alerts && length(var.container_app_ids) > 0 ? 1 : 0
   
   name                = "${var.app_name}-cpu-high"
   resource_group_name = var.resource_group_name
@@ -94,9 +94,9 @@ resource "azurerm_monitor_metric_alert" "cpu_high" {
   tags = var.tags
 }
 
-# Metric Alert para Memory
+# Metric Alert para Memory (só cria se tiver container apps)
 resource "azurerm_monitor_metric_alert" "memory_high" {
-  count = var.enable_alerts ? 1 : 0
+  count = var.enable_alerts && length(var.container_app_ids) > 0 ? 1 : 0
   
   name                = "${var.app_name}-memory-high"
   resource_group_name = var.resource_group_name
@@ -149,7 +149,7 @@ XML
 
 # Smart Detection Rules (detecção automática de problemas)
 resource "azurerm_application_insights_smart_detection_rule" "failure_anomalies" {
-  name                    = "Failure Anomalies - ${var.app_name}"
+  name                    = "Failure Anomalies"  # Nome deve ser da lista predefinida
   application_insights_id = azurerm_application_insights.main.id
   enabled                 = true
   send_emails_to_subscription_owners = false
@@ -162,7 +162,7 @@ resource "azurerm_application_insights_smart_detection_rule" "failure_anomalies"
 resource "azurerm_application_insights_workbook" "main" {
   count = var.create_dashboard ? 1 : 0
   
-  name                = "${var.app_name}-dashboard"
+  name                = "12345678-1234-1234-1234-123456789012"  # UUID válido requerido
   resource_group_name = var.resource_group_name
   location            = var.location
   display_name        = "SuperChat Monitoring Dashboard"

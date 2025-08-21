@@ -130,6 +130,9 @@ module "application_insights" {
   enable_alerts = true
   admin_emails  = var.admin_emails
 
+  # Container Apps IDs para alertas (será populado após criação)
+  container_app_ids = []  # Vazio inicialmente, alertas serão criados depois
+
   # Dashboard personalizado
   create_dashboard = true
 
