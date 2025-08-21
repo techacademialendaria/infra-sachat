@@ -233,17 +233,17 @@ export APP_NAME="superchat"
 
 ## 🛠️ ÚLTIMOS 3 PROBLEMAS E SOLUÇÕES (REGRA #4)
 
-### **❌ PROBLEMA 1: Storage Retention Policy Deprecated**
-- **Erro**: `retention_policy` depreciado em azurerm_monitor_diagnostic_setting
-- **✅ Solução**: Removido retention_policy blocks, agora gerenciado via azurerm_storage_management_policy
+### **❌ PROBLEMA 1: Application Insights Alerts Require Container Apps IDs**
+- **Erro**: `scopes` requires 1 item minimum, but config has only 0 declared
+- **✅ Solução**: Adicionada condição `length(var.container_app_ids) > 0` nos alertas e inicializado com lista vazia
 
-### **❌ PROBLEMA 2: CosmosDB connection_strings Attribute Error**
-- **Erro**: `connection_strings[0]` não existe em azurerm_cosmosdb_account provider 4.13+
-- **✅ Solução**: Construída connection string manualmente usando `endpoint` e `primary_key`
+### **❌ PROBLEMA 2: PostgreSQL High Availability Mode Invalid**
+- **Erro**: expected `high_availability.mode` to be one of ["ZoneRedundant" "SameZone"], got Disabled
+- **✅ Solução**: Usado `dynamic` block para só criar high_availability quando habilitado
 
-### **❌ PROBLEMA 3: Container Apps Health Probes Syntax Error**
-- **Erro**: Sintaxe `http_get`, `port`, `initial_delay_seconds` não suportada no provider 4.13+
-- **✅ Solução**: Mudado para sintaxe simples: `transport = "HTTP"`, `port = X`, `path = "/health"`
+### **❌ PROBLEMA 3: Storage Account Name Deprecated + Smart Detection Rule Names**
+- **Erro**: `storage_account_name` deprecated + invalid smart detection rule name + workbook UUID required
+- **✅ Solução**: Usados `storage_account_id`, nome predefinido "Failure Anomalies", UUID válido para workbook
 
 ---
 

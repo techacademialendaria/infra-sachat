@@ -149,7 +149,7 @@ XML
 
 # Smart Detection Rules (detecção automática de problemas)
 resource "azurerm_application_insights_smart_detection_rule" "failure_anomalies" {
-  name                    = "Failure Anomalies"  # Nome deve ser da lista predefinida
+  name                    = "Abnormal rise in exception volume"  # Nome da lista predefinida do Azure
   application_insights_id = azurerm_application_insights.main.id
   enabled                 = true
   send_emails_to_subscription_owners = false
