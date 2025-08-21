@@ -67,20 +67,22 @@ resource "azurerm_postgresql_flexible_server_database" "rag_database" {
 }
 
 # Configuração pgvector (equivalente ao ankane/pgvector:latest)
-resource "azurerm_postgresql_flexible_server_configuration" "pgvector" {
-  count     = var.enable_pgvector ? 1 : 0
-  name      = "shared_preload_libraries"
-  server_id = azurerm_postgresql_flexible_server.main.id
-  value     = "vector"
-}
+# NOTA: pgvector não precisa ser carregado em shared_preload_libraries no Azure
+# Será instalado via CREATE EXTENSION após o servidor estar disponível
+# resource "azurerm_postgresql_flexible_server_configuration" "pgvector" {
+#   count     = var.enable_pgvector ? 1 : 0
+#   name      = "shared_preload_libraries"
+#   server_id = azurerm_postgresql_flexible_server.main.id
+#   value     = "vector"
+# }
 
-# Extensão pgvector
-resource "azurerm_postgresql_flexible_server_configuration" "vector_extension" {
-  count     = var.enable_pgvector ? 1 : 0
-  name      = "azure.extensions"
-  server_id = azurerm_postgresql_flexible_server.main.id
-  value     = "vector"
-}
+# Extensão pgvector (comentado - instalar manualmente)
+# resource "azurerm_postgresql_flexible_server_configuration" "vector_extension" {
+#   count     = var.enable_pgvector ? 1 : 0
+#   name      = "azure.extensions"
+#   server_id = azurerm_postgresql_flexible_server.main.id
+#   value     = "vector"
+# }
 
 # Firewall rules para desenvolvimento (pode ser removido em produção)
 resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_services" {

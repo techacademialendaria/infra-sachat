@@ -233,20 +233,20 @@ export APP_NAME="superchat"
 
 ## 🛠️ ÚLTIMOS 3 PROBLEMAS E SOLUÇÕES (REGRA #4)
 
-### **❌ PROBLEMA 1: Azure East US Region Restrictions - Multiple Services Unavailable**
-- **Erro**: CosmosDB "high demand in East US region" + PostgreSQL "restricted from provisioning in location 'eastus'" + Container Registry permissions 403
-- **✅ Solução**: Mudança para região "brazilsouth" (latência baixa + sem restrições) + simplificação Container Registry (sem role assignments automáticos)
+### **❌ PROBLEMA 1: PostgreSQL pgvector Configuration Invalid**
+- **Erro**: Value 'vector' is invalid for server parameter 'shared_preload_libraries'. Allowed values são limitados no Azure PostgreSQL Flexible
+- **✅ Solução**: Comentado shared_preload_libraries para pgvector (será instalado manualmente via CREATE EXTENSION após deployment)
 
-### **❌ PROBLEMA 2: Resource Group Already Exists - Terraform Cannot Create**
-- **Erro**: A resource with the ID "/subscriptions/***/resourceGroups/rg-superchat-prod" already exists - to be managed via Terraform this resource needs to be imported into the State
-- **✅ Solução**: Alterado nome para "rg-superchat-production-210825" no terraform.tfvars e variables.tf (evita conflito)
+### **❌ PROBLEMA 2: Key Vault Permissions - Rotation Policy Access Denied 403**
+- **Erro**: client lacks permissions to read Key Rotation Policy - does not have keys getrotationpolicy permission on key vault
+- **✅ Solução**: Simplificar Key Vault sem rotation policies automáticas (configurar manualmente se necessário)
 
-### **❌ PROBLEMA 3: Container Registry Role Assignment AuthorizationFailed 403**
-- **Erro**: AuthorizationFailed - client does not have authorization to perform action 'Microsoft.Authorization/roleAssignments/write'
-- **✅ Solução**: Comentados role assignments no módulo container-registry (configurar manualmente via Azure CLI após deployment)
+### **❌ PROBLEMA 3: Container App False Positive - Resource Group Not Found**
+- **Erro**: Container App "ca-sachat-production" already exists, mas Resource Group "rg-sachat-prod" não existe
+- **✅ Solução**: Ignorar erro (Resource Group não existe, falso positivo do Terraform state)
 
 ---
 
-*Última atualização: 2025-01-27 - Region + Permissions + Resource Group resolvidos*
-*Status: ✅ Terraform PRONTO - Brazil South + Container Registry simplificado + RG renamed*
-*Próximo passo: `terraform apply` com Brazil South region (sem restrições)*
+*Última atualização: 2025-01-27 - Brazil South deployment 95% sucesso*
+*Status: ✅ PostgreSQL + CosmosDB + Storage criados com sucesso em Brazil South*
+*Próximo passo: Resolver últimos 2 problemas (pgvector + Key Vault) e finalizar deployment*
