@@ -247,6 +247,6 @@ export APP_NAME="superchat"
 
 ---
 
-*Última atualização: 2025-01-27 - Brazil South deployment 95% sucesso*
-*Status: ✅ PostgreSQL + CosmosDB + Storage criados com sucesso em Brazil South*
-*Próximo passo: Resolver últimos 2 problemas (pgvector + Key Vault) e finalizar deployment*
+*Última atualização: 2025-01-27 - Brazil South deployment 95% sucesso - PostgreSQL criado!*
+*Status: ✅ PostgreSQL + Database + CosmosDB + Storage funcionando em Brazil South*
+*Próximo passo: Commit das correções pgvector e executar terraform apply final*
