@@ -177,10 +177,10 @@ Use os outputs do Terraform para atualizar:
 export TF_LOG=DEBUG
 
 # Logs dos Container Apps
-az containerapp logs show --name superchat-api --resource-group rg-superchat-production
+az containerapp logs show --name superchat-api --resource-group rg-superchat-production-210825
 
 # Status dos recursos
-az resource list --resource-group rg-superchat-production --output table
+az resource list --resource-group rg-superchat-production-210825 --output table
 ```
 
 ---

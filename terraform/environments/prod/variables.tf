@@ -4,7 +4,7 @@
 variable "resource_group_name" {
   description = "Nome do Resource Group principal"
   type        = string
-  default     = "rg-superchat-productionuction"
+  default     = "rg-superchat-production-210825"
 }
 
 variable "location" {

@@ -44,7 +44,7 @@ rag_api          → superchat-rag-api (1-5 replicas)
 ```
 
 ### Recursos Azure:
-- **Resource Group**: `rg-superchat-production` (será criado)
+- **Resource Group**: `rg-superchat-production-210825` (será criado)
 - **Container Registry**: `superchatregistry.azurecr.io` (será criado)
 - **Storage Account**: `superchatfiles` (será criado - para substituir volumes locais)
 - **CosmosDB**: `superchat-cosmosdb` (será criado - ServerLess, MongoDB API)
@@ -171,7 +171,7 @@ docker compose -f ./deploy-compose.yml up -d --build
 
 ### Azure:
 ```bash
-export RESOURCE_GROUP="rg-superchat-production"
+export RESOURCE_GROUP="rg-superchat-production-210825"
 export LOCATION="eastus"
 export APP_NAME="superchat"
 ```
@@ -235,7 +235,7 @@ export APP_NAME="superchat"
 
 ### **❌ PROBLEMA 1: Resource Group Already Exists - Terraform Cannot Create**
 - **Erro**: A resource with the ID "/subscriptions/***/resourceGroups/rg-superchat-prod" already exists - to be managed via Terraform this resource needs to be imported into the State
-- **✅ Solução**: Alterado nome para "rg-superchat-production" no terraform.tfvars e variables.tf (evita conflito)
+- **✅ Solução**: Alterado nome para "rg-superchat-production-210825" no terraform.tfvars e variables.tf (evita conflito)
 
 ### **❌ PROBLEMA 2: Smart Detection Rule Name Invalid**
 - **Erro**: expected name to be one of ["Slow page load time" "Slow server response time"...], got "Failure Anomalies"
@@ -248,5 +248,5 @@ export APP_NAME="superchat"
 ---
 
 *Última atualização: 2025-01-27 - Resource Group naming conflict resolvido*
-*Status: ✅ Terraform PRONTO - Resource Group renamed para rg-superchat-production*
+*Status: ✅ Terraform PRONTO - Resource Group renamed para rg-superchat-production-210825*
 *Próximo passo: `terraform apply` com novo Resource Group name*

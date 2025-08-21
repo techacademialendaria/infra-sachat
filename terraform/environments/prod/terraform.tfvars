@@ -2,7 +2,7 @@
 # Migração fiel do docker-compose.yml local para Azure Container Apps
 
 # Configurações Básicas
-resource_group_name = "rg-superchat-productionuction"
+resource_group_name = "rg-superchat-production-210825"
 location            = "eastus"
 app_name            = "superchat"
 environment         = "production"
