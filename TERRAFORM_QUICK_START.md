@@ -22,7 +22,7 @@ az account show --output table
 
 ### **2. Configurar Variáveis**
 ```bash
-export RESOURCE_GROUP="rg-superchat-prod"
+export RESOURCE_GROUP="rg-superchat-production"
 export LOCATION="eastus"
 export APP_NAME="superchat"
 ```

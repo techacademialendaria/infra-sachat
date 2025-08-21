@@ -44,7 +44,7 @@ rag_api          → superchat-rag-api (1-5 replicas)
 ```
 
 ### Recursos Azure:
-- **Resource Group**: `rg-superchat-prod` (será criado)
+- **Resource Group**: `rg-superchat-production` (será criado)
 - **Container Registry**: `superchatregistry.azurecr.io` (será criado)
 - **Storage Account**: `superchatfiles` (será criado - para substituir volumes locais)
 - **CosmosDB**: `superchat-cosmosdb` (será criado - ServerLess, MongoDB API)
@@ -171,7 +171,7 @@ docker compose -f ./deploy-compose.yml up -d --build
 
 ### Azure:
 ```bash
-export RESOURCE_GROUP="rg-superchat-prod"
+export RESOURCE_GROUP="rg-superchat-production"
 export LOCATION="eastus"
 export APP_NAME="superchat"
 ```
@@ -233,19 +233,20 @@ export APP_NAME="superchat"
 
 ## 🛠️ ÚLTIMOS 3 PROBLEMAS E SOLUÇÕES (REGRA #4)
 
-### **❌ PROBLEMA 1: Application Insights Alerts Require Container Apps IDs**
-- **Erro**: `scopes` requires 1 item minimum, but config has only 0 declared
-- **✅ Solução**: Adicionada condição `length(var.container_app_ids) > 0` nos alertas e inicializado com lista vazia
+### **❌ PROBLEMA 1: Smart Detection Rule Name Invalid**
+- **Erro**: expected name to be one of ["Slow page load time" "Slow server response time"...], got "Failure Anomalies"
+- **✅ Solução**: Mudado para "Abnormal rise in exception volume" (valor da lista predefinida Azure)
 
-### **❌ PROBLEMA 2: PostgreSQL High Availability Mode Invalid**
-- **Erro**: expected `high_availability.mode` to be one of ["ZoneRedundant" "SameZone"], got Disabled
-- **✅ Solução**: Usado `dynamic` block para só criar high_availability quando habilitado
+### **❌ PROBLEMA 2: Container Apps Custom Domain Unconfigurable**
+- **Erro**: Can't configure a value for "ingress.0.custom_domain": its value will be decided automatically
+- **✅ Solução**: Removido `custom_domain` do bloco ingress (gerenciado automaticamente pelo Azure)
 
-### **❌ PROBLEMA 3: Storage Account Name Deprecated + Smart Detection Rule Names**
-- **Erro**: `storage_account_name` deprecated + invalid smart detection rule name + workbook UUID required
-- **✅ Solução**: Usados `storage_account_id`, nome predefinido "Failure Anomalies", UUID válido para workbook
+### **❌ PROBLEMA 3: Missing Subscription ID in Provider**
+- **Erro**: `subscription_id` is a required provider property when performing a plan/apply operation
+- **✅ Solução**: Adicionado `subscription_id = "a346bbab-4a12-49d7-ac00-819eb93c7802"` no provider azurerm
 
 ---
 
-*Última atualização: 2025-01-27 - Todos os erros de validação corrigidos*
-*Status: ✅ Terraform VALIDADO - Pronto para `terraform apply`*
+*Última atualização: 2025-01-27 - Correções de validação Terraform 2025*
+*Status: ✅ Terraform PRONTO - Smart Detection + Custom Domain + Subscription ID corrigidos*
+*Próximo passo: `terraform apply` após liberar lock órfão (terraform force-unlock)*
