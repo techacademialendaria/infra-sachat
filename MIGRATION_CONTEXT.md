@@ -233,20 +233,20 @@ export APP_NAME="superchat"
 
 ## 🛠️ ÚLTIMOS 3 PROBLEMAS E SOLUÇÕES (REGRA #4)
 
-### **❌ PROBLEMA 1: Smart Detection Rule Name Invalid**
+### **❌ PROBLEMA 1: Resource Group Already Exists - Terraform Cannot Create**
+- **Erro**: A resource with the ID "/subscriptions/***/resourceGroups/rg-superchat-prod" already exists - to be managed via Terraform this resource needs to be imported into the State
+- **✅ Solução**: Alterado nome para "rg-superchat-production" no terraform.tfvars e variables.tf (evita conflito)
+
+### **❌ PROBLEMA 2: Smart Detection Rule Name Invalid**
 - **Erro**: expected name to be one of ["Slow page load time" "Slow server response time"...], got "Failure Anomalies"
 - **✅ Solução**: Mudado para "Abnormal rise in exception volume" (valor da lista predefinida Azure)
 
-### **❌ PROBLEMA 2: Container Apps Custom Domain Unconfigurable**
+### **❌ PROBLEMA 3: Container Apps Custom Domain Unconfigurable**
 - **Erro**: Can't configure a value for "ingress.0.custom_domain": its value will be decided automatically
 - **✅ Solução**: Removido `custom_domain` do bloco ingress (gerenciado automaticamente pelo Azure)
 
-### **❌ PROBLEMA 3: Missing Subscription ID in Provider**
-- **Erro**: `subscription_id` is a required provider property when performing a plan/apply operation
-- **✅ Solução**: Adicionado `subscription_id = "a346bbab-4a12-49d7-ac00-819eb93c7802"` no provider azurerm
-
 ---
 
-*Última atualização: 2025-01-27 - Correções de validação Terraform 2025*
-*Status: ✅ Terraform PRONTO - Smart Detection + Custom Domain + Subscription ID corrigidos*
-*Próximo passo: `terraform apply` após liberar lock órfão (terraform force-unlock)*
+*Última atualização: 2025-01-27 - Resource Group naming conflict resolvido*
+*Status: ✅ Terraform PRONTO - Resource Group renamed para rg-superchat-production*
+*Próximo passo: `terraform apply` com novo Resource Group name*
